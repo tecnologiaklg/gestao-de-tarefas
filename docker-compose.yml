@@ -1,0 +1,99 @@
+# ============================================================
+# docker-compose.yml — Gestão de Tarefas (VPS + Traefik)
+# ============================================================
+# Uso:
+#   1. Copie .env.example → .env e preencha todas as variáveis
+#   2. Garanta que o Traefik esteja rodando com a rede "proxy"
+#   3. docker compose up -d
+# ============================================================
+
+networks:
+  proxy:
+    external: true      # rede gerenciada pelo Traefik no host
+  internal:
+    driver: bridge      # rede interna: backend ↔ db ↔ bot
+
+volumes:
+  postgres_data:
+
+services:
+
+  # ── PostgreSQL ───────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: always
+    networks: [internal]
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend (Node.js / Express / TypeScript) ─────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    networks: [internal, proxy]
+    environment:
+      NODE_ENV:         production
+      PORT:             4000
+      DATABASE_URL:     postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET:       ${JWT_SECRET}
+      JWT_EXPIRES_IN:   ${JWT_EXPIRES_IN}
+      ROOT_ADMIN_TOKEN: ${ROOT_ADMIN_TOKEN}
+      BOT_INTERNAL_URL: http://bot:3001
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      # Rota: api.seu-dominio.com/api/* → backend
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=4000"
+
+  # ── Frontend (React + Vite → Nginx) ──────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    networks: [proxy]
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      # Rota: seu-dominio.com/* → frontend
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      # Redirect HTTP → HTTPS
+      - "traefik.http.routers.frontend-http.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.routers.frontend-http.middlewares=redirect-https"
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+
+  # ── Bot Discord (TypeScript) ──────────────────────────────────
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    restart: always
+    networks: [internal]   # não exposto ao Traefik — só interno
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      BACKEND_URL:   http://backend:4000
+      BOT_PORT:      3001
