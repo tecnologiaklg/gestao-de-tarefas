@@ -1,10 +1,9 @@
-name: Deploy to VPS
+name: Deploy Gestão de Tarefas
 
 on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 jobs:
@@ -13,46 +12,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to VPS via SSH
+      - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
+          port: ${{ secrets.VPS_PORT }}
+
           script: |
             set -e
 
-            # 1. Diretório da aplicação na VPS
-            APP_DIR="/opt/portal_de_tarefas"
-            mkdir -p $APP_DIR
+            APP_DIR="/docker/gestao-tarefas"
+            DEPLOY_KEY="/home/appadmin/.ssh/gestao-tarefas_key"
 
-            # 2. Clona ou puxa as atualizações do Git
-            if [ ! -d "$APP_DIR/.git" ]; then
-              echo "Clonando repositório pela primeira vez..."
-              git clone https://github.com/${{ github.repository }}.git $APP_DIR
-              cd $APP_DIR
-            else
-              echo "Atualizando repositório existente..."
-              cd $APP_DIR
-              git fetch --all
-              git reset --hard origin/${{ github.ref_name }}
+            echo "====================================="
+            echo "Deploy Gestão de Tarefas"
+            echo "====================================="
+
+            cd "$APP_DIR"
+
+            echo "Atualizando código..."
+
+            GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes" \
+            git fetch origin main
+
+            GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes" \
+            git reset --hard origin/main
+
+            echo "Verificando .env..."
+
+            if [ ! -f .env ]; then
+              echo "ERRO: .env não encontrado em $APP_DIR"
+              exit 1
             fi
 
-            # 3. Garante que a rede proxy do Traefik existe
-            docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
+            echo "Validando Docker Compose..."
+            docker compose config >/dev/null
 
-            # 4. Escreve o arquivo .env a partir do Secret do GitHub
-            echo "${{ secrets.ENV_FILE }}" > .env
+            echo "Build..."
+            docker compose build
 
-            # 5. Build e Deploy com Docker Compose (nome do projeto isolado)
-            echo "Iniciando build e subida dos containers..."
-            docker compose -p portal_tarefas up -d --build --remove-orphans
+            echo "Subindo containers..."
+            docker compose up -d --remove-orphans
 
-            # 6. Limpeza de imagens antigas não utilizadas
+            echo "Status:"
+            docker compose ps
+
             docker image prune -f
 
             echo "Deploy concluído com sucesso!"
