@@ -1,17 +1,12 @@
 # ============================================================
 # docker-compose.yml — Gestão de Tarefas (VPS + Traefik)
 # ============================================================
-# Uso:
-#   1. Copie .env.example → .env e preencha todas as variáveis
-#   2. Garanta que o Traefik esteja rodando com a rede "proxy"
-#   3. docker compose up -d
-# ============================================================
 
 networks:
   proxy:
     external: true      # rede gerenciada pelo Traefik no host
   internal:
-    driver: bridge      # rede interna: backend ↔ db ↔ bot
+    driver: bridge      # rede interna isolada: backend ↔ db ↔ bot
 
 volumes:
   postgres_data:
@@ -20,9 +15,13 @@ services:
 
   # ── PostgreSQL ───────────────────────────────────────────────
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
+    container_name: portal_tarefas_db
     restart: always
-    networks: [internal]
+    ports:
+      - "5433:5432"     # porta 5433 no host para não colidir com 5432 de outros bancos
+    networks:
+      - internal
     environment:
       POSTGRES_DB:       ${POSTGRES_DB}
       POSTGRES_USER:     ${POSTGRES_USER}
@@ -41,8 +40,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: portal_tarefas_backend
     restart: always
-    networks: [internal, proxy]
+    networks:
+      - internal
+      - proxy
     environment:
       NODE_ENV:         production
       PORT:             4000
@@ -57,42 +59,44 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      # Rota: api.seu-dominio.com/api/* → backend
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=4000"
+      - "traefik.http.routers.portal-backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.portal-backend.entrypoints=websecure"
+      - "traefik.http.routers.portal-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portal-backend.loadbalancer.server.port=4000"
 
   # ── Frontend (React + Vite → Nginx) ──────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: portal_tarefas_frontend
     restart: always
-    networks: [proxy]
+    networks:
+      - proxy
     depends_on:
       - backend
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      # Rota: seu-dominio.com/* → frontend
-      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.portal-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.portal-frontend.entrypoints=websecure"
+      - "traefik.http.routers.portal-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portal-frontend.loadbalancer.server.port=80"
       # Redirect HTTP → HTTPS
-      - "traefik.http.routers.frontend-http.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend-http.entrypoints=web"
-      - "traefik.http.routers.frontend-http.middlewares=redirect-https"
-      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.portal-frontend-http.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.portal-frontend-http.entrypoints=web"
+      - "traefik.http.routers.portal-frontend-http.middlewares=portal-redirect-https"
+      - "traefik.http.middlewares.portal-redirect-https.redirectscheme.scheme=https"
 
   # ── Bot Discord (TypeScript) ──────────────────────────────────
   bot:
     build:
       context: ./bot
       dockerfile: Dockerfile
+    container_name: portal_tarefas_bot
     restart: always
-    networks: [internal]   # não exposto ao Traefik — só interno
+    networks:
+      - internal        # apenas rede interna, não exposto externamente
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       BACKEND_URL:   http://backend:4000

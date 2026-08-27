@@ -10,15 +10,25 @@ interface ColConfig {
   accent: string;
   dot: string;
   emptyMsg: string;
-  emptyIcon: string;
 }
 
 const COL_CONFIG: Record<Status, ColConfig> = {
-  PENDENTE:     { label: 'Pendente',     accent: 'var(--color-pendente)',  dot: 'var(--color-pendente)',  emptyMsg: 'Nenhuma tarefa pendente',    emptyIcon: '📭' },
-  EM_ANDAMENTO: { label: 'Em Andamento', accent: 'var(--color-andamento)', dot: 'var(--color-andamento)', emptyMsg: 'Nenhuma tarefa em andamento', emptyIcon: '⚡' },
-  AGUARDANDO:   { label: 'Aguardando',   accent: 'var(--color-aguardando)',dot: 'var(--color-aguardando)',emptyMsg: 'Nenhuma tarefa aguardando',   emptyIcon: '⏸️' },
-  CONCLUIDA:    { label: 'Concluída',    accent: 'var(--color-concluida)', dot: 'var(--color-concluida)', emptyMsg: 'Nenhuma tarefa concluída (7d)',emptyIcon: '✅' },
+  PENDENTE:     { label: 'Pendente',     accent: 'var(--color-pendente)',  dot: 'var(--color-pendente)',  emptyMsg: 'Nenhuma tarefa pendente' },
+  EM_ANDAMENTO: { label: 'Em Andamento', accent: 'var(--color-andamento)', dot: 'var(--color-andamento)', emptyMsg: 'Nenhuma tarefa em andamento' },
+  AGUARDANDO:   { label: 'Aguardando',   accent: 'var(--color-aguardando)',dot: 'var(--color-aguardando)',emptyMsg: 'Nenhuma tarefa aguardando' },
+  CONCLUIDA:    { label: 'Concluída',    accent: 'var(--color-concluida)', dot: 'var(--color-concluida)', emptyMsg: 'Nenhuma tarefa concluída recentemente' },
 };
+
+function EmptyStateIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="9" y1="13" x2="15" y2="13" />
+      <line x1="9" y1="17" x2="13" y2="17" />
+    </svg>
+  );
+}
 
 function SortableCard({ tarefa, variant, onOpen }: { tarefa: Tarefa; variant: 'minhas' | 'criadas'; onOpen: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tarefa.id });
@@ -62,7 +72,9 @@ export function KanbanColumn({ status, tarefas, variant, onCardClick }: Props) {
         >
           {tarefas.length === 0 ? (
             <div className="kanban-empty">
-              <div className="empty-icon">{cfg.emptyIcon}</div>
+              <div className="empty-icon">
+                <EmptyStateIcon />
+              </div>
               <p>{cfg.emptyMsg}</p>
             </div>
           ) : (

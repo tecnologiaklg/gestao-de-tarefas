@@ -3,9 +3,9 @@ import { Tarefa } from '../types';
 
 export interface CreateTarefaData {
   titulo: string;
-  descricao: string;
+  descricao?: string;
   responsavel_id: number;
-  setor_id: number;
+  setor_id?: number;
   prioridade: string;
   prazo: string;
 }

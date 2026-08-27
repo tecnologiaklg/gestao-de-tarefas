@@ -7,6 +7,12 @@ export const UsuarioController = {
   listar: async (_req: Request, res: Response, next: NextFunction) => {
     try { res.json(await UsuarioService.listar()); } catch (e) { next(e); }
   },
+  gerarPin: async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const pin = await UsuarioService.gerarPinUnico();
+      res.json({ pin });
+    } catch (e) { next(e); }
+  },
   criar: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user as Partial<JWTPayloadUser>;

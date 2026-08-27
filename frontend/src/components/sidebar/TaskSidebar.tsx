@@ -63,7 +63,7 @@ export function TaskSidebar({ tarefa, onClose }: Props) {
         <div className="sidebar-panel-tabs">
           {(['detalhes', 'historico', 'comentarios'] as Tab[]).map(t => (
             <button key={t} className={`sidebar-tab${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>
-              {t === 'detalhes' ? '📋 Detalhes' : t === 'historico' ? '🕒 Histórico' : '💬 Comentários'}
+              {t === 'detalhes' ? 'Detalhes' : t === 'historico' ? 'Histórico' : 'Comentários'}
             </button>
           ))}
         </div>
@@ -84,7 +84,7 @@ export function TaskSidebar({ tarefa, onClose }: Props) {
                 ['Prazo',       formatDT(tarefa.prazo)],
                 ['Criado em',   formatDT(tarefa.criado_em)],
                 tarefa.concluido_em ? ['Concluído em', formatDT(tarefa.concluido_em)] : null,
-              ].filter(Boolean).map(([label, value]) => (
+              ].filter((x): x is [string, string] => Boolean(x)).map(([label, value]) => (
                 <div className="detail-field" key={label}>
                   <div className="detail-label">{label}</div>
                   <div className="detail-value">{value}</div>

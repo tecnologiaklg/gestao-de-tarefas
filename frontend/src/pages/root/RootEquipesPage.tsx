@@ -5,6 +5,27 @@ import { useSetores } from '../../hooks/useData';
 import { setorService } from '../../services/setorService';
 import { Setor } from '../../types';
 
+function IconUsers() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function IconCoordinator() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <polyline points="17 11 19 13 23 9" />
+    </svg>
+  );
+}
+
 function SetorModal({ setor, onClose, onSaved }: { setor?: Setor | null; onClose: () => void; onSaved: () => void }) {
   const [nome, setNome]   = useState(setor?.nome ?? '');
   const [loading, setLoading] = useState(false);
@@ -29,7 +50,7 @@ function SetorModal({ setor, onClose, onSaved }: { setor?: Setor | null; onClose
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 380 }} onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <span className="modal-title">{setor ? '✏️ Editar Setor' : '🏢 Novo Setor'}</span>
+          <span className="modal-title">{setor ? 'Editar Setor' : 'Novo Setor'}</span>
           <button className="sidebar-panel-close" onClick={onClose}>✕</button>
         </div>
         <div className="modal-body">
@@ -65,19 +86,19 @@ export function RootEquipesPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--slate-400)' }}>Carregando setores…</div>
+        <div style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--stone-400)' }}>Carregando setores…</div>
       ) : (
         <div className="sector-grid">
           {setores.map(s => (
             <div key={s.id} className="sector-card">
-              <div className="sector-card-name">🏢 {s.nome}</div>
+              <div className="sector-card-name">{s.nome}</div>
               <div className="sector-meta">
-                <span>👥</span>
+                <IconUsers />
                 <span>{s.total_membros ?? 0} membro(s)</span>
               </div>
               {s.coordenadores && s.coordenadores.length > 0 && (
                 <div className="sector-meta">
-                  <span>⭐</span>
+                  <IconCoordinator />
                   <span>{s.coordenadores.map(c => c.nome).join(', ')}</span>
                 </div>
               )}

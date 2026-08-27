@@ -7,11 +7,10 @@ export function ConfirmCreateModal({ onConfirm, onCancel, loading }: Props) {
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420 }}>
         <div className="modal-header">
-          <span className="modal-title">⚠️ Confirmar Criação</span>
+          <span className="modal-title">Confirmar Criação</span>
         </div>
         <div className="modal-body">
           <div className="alert alert-warning">
-            <span>⚠️</span>
             <span>
               <strong>Atenção:</strong> Após criada, a tarefa <strong>não poderá ser excluída</strong>.
               Certifique-se de que todas as informações estão corretas antes de confirmar.

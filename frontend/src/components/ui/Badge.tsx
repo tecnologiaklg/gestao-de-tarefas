@@ -6,7 +6,7 @@ interface BadgeProps {
 }
 
 const labelMap: Record<string, string> = {
-  BAIXA: 'Baixa', NORMAL: 'Normal', URGENTE: '🔴 Urgente',
+  BAIXA: 'Baixa', NORMAL: 'Normal', URGENTE: 'Urgente',
   PENDENTE: 'Pendente', EM_ANDAMENTO: 'Em Andamento', AGUARDANDO: 'Aguardando', CONCLUIDA: 'Concluída',
 };
 
@@ -18,7 +18,7 @@ const classMap: Record<string, string> = {
 
 export function Badge({ type, value }: BadgeProps) {
   if (type === 'atrasada') {
-    return value ? <span className="badge badge-atrasada">⚠ Atrasada</span> : null;
+    return value ? <span className="badge badge-atrasada">Atrasada</span> : null;
   }
   const key = String(value);
   return <span className={classMap[key] ?? 'badge'}>{labelMap[key] ?? key}</span>;

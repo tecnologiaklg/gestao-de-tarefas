@@ -7,26 +7,45 @@ interface Props {
 }
 
 export function PinInput({ value, onChange, disabled }: Props) {
-  const digits = value.padEnd(6, '').split('').slice(0, 6);
-  const refs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));
+  const digits = Array.from({ length: 6 }, (_, i) => value[i] || '');
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleChange = (i: number, v: string) => {
-    if (!/^\d?$/.test(v)) return;
-    const next = [...digits];
-    next[i] = v;
-    onChange(next.join('').replace(/\s/g, ''));
-    if (v && i < 5) refs[i + 1].current?.focus();
+    const char = v.replace(/\D/g, '').slice(-1);
+    const chars = Array.from({ length: 6 }, (_, idx) => value[idx] || '');
+    chars[i] = char;
+    
+    // Constrói nova string de dígitos preenchidos contiguamente
+    const nextVal = chars.join('').replace(/\s+$/, '');
+    onChange(nextVal);
+
+    if (char && i < 5) {
+      inputRefs.current[i + 1]?.focus();
+    }
   };
 
   const handleKey = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !digits[i] && i > 0) refs[i - 1].current?.focus();
+    if (e.key === 'Backspace') {
+      if (!digits[i] && i > 0) {
+        inputRefs.current[i - 1]?.focus();
+      } else if (digits[i]) {
+        const chars = Array.from({ length: 6 }, (_, idx) => value[idx] || '');
+        chars[i] = '';
+        onChange(chars.join('').replace(/\s+$/, ''));
+      }
+    } else if (e.key === 'ArrowLeft' && i > 0) {
+      inputRefs.current[i - 1]?.focus();
+    } else if (e.key === 'ArrowRight' && i < 5) {
+      inputRefs.current[i + 1]?.focus();
+    }
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    onChange(paste.padEnd(6, '').slice(0, 6));
-    refs[Math.min(paste.length, 5)].current?.focus();
+    onChange(paste);
+    const focusIdx = Math.min(paste.length, 5);
+    inputRefs.current[focusIdx]?.focus();
   };
 
   return (
@@ -34,7 +53,7 @@ export function PinInput({ value, onChange, disabled }: Props) {
       {digits.map((d, i) => (
         <input
           key={i}
-          ref={refs[i]}
+          ref={el => { inputRefs.current[i] = el; }}
           id={`pin-cell-${i}`}
           className="pin-input-cell"
           type="password"
@@ -51,3 +70,4 @@ export function PinInput({ value, onChange, disabled }: Props) {
     </div>
   );
 }
+

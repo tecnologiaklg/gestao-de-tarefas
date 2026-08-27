@@ -10,10 +10,10 @@ export function WaitingReasonModal({ onConfirm, onCancel }: Props) {
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420 }}>
         <div className="modal-header">
-          <span className="modal-title">⏸️ Motivo do Aguardo</span>
+          <span className="modal-title">Motivo do Aguardo</span>
         </div>
         <div className="modal-body">
-          <p style={{ fontSize: 'var(--font-sm)', color: 'var(--slate-600)' }}>
+          <p style={{ fontSize: 'var(--font-sm)', color: 'var(--stone-600)' }}>
             Informe o motivo pelo qual esta tarefa está aguardando.
             Sem motivo preenchido, a movimentação será cancelada.
           </p>

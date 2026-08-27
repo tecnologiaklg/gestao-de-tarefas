@@ -4,10 +4,9 @@ import './config/env'; // valida variáveis no boot
 import express, { Request, Response, NextFunction } from 'express';
 import cors    from 'cors';
 import helmet  from 'helmet';
-import morgan  from 'morgan';
-
 import routes       from './routes';
 import { errorHandler } from './middleware/errorHandler';
+import { requestLogger } from './middleware/requestLogger';
 import { UsuarioRepository } from './repositories/UsuarioRepository';
 import { LogRepository }     from './repositories/LogRepository';
 import { KpiService }        from './services/KpiService';
@@ -17,7 +16,7 @@ const app = express();
 
 app.use(helmet());
 app.use(cors());
-app.use(morgan('combined'));
+app.use(requestLogger);
 app.use(express.json());
 
 // Healthcheck

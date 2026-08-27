@@ -1,6 +1,15 @@
 interface Filters { search: string; prioridade: string; prazo: string; }
 interface Props { filters: Filters; onChange: (f: Filters) => void; }
 
+function SearchIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
 export function FilterBar({ filters, onChange }: Props) {
   const set = (k: keyof Filters) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     onChange({ ...filters, [k]: e.target.value });
@@ -8,7 +17,9 @@ export function FilterBar({ filters, onChange }: Props) {
   return (
     <div className="filter-bar">
       <div className="filter-search">
-        <span className="search-icon">🔍</span>
+        <span className="search-icon">
+          <SearchIcon />
+        </span>
         <input
           id="filter-search"
           type="text"
@@ -40,7 +51,7 @@ export function FilterBar({ filters, onChange }: Props) {
           onClick={() => onChange({ search: '', prioridade: '', prazo: '' })}
           title="Limpar filtros"
         >
-          ✕ Limpar
+          Limpar filtros
         </button>
       )}
     </div>
