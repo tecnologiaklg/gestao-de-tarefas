@@ -6,7 +6,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
 import { AuthUser } from '../types';
 
-const DISCORD_BOT_URL = 'https://discord.com/oauth2/authorize?client_id=1540424028471169125';
+const DISCORD_BOT_URL = 'https://discord.com/users/1540424028471169125';
+const DISCORD_INVITE_URL = 'https://discord.com/oauth2/authorize?client_id=1540424028471169125&permissions=8&integration_type=0&scope=bot+applications.commands';
 
 type Step = 'pin' | 'discord_required' | 'discord_confirm';
 

@@ -106,32 +106,48 @@ async function processarVinculo(pin: string, discordId: string, replyFn: (text: 
   }
 }
 
-// ── 1. Resposta a Mensagens de Texto (/vincular) ────────────────────────────────
+// ── 1. Resposta a Mensagens de Texto (/vincular ou envio direto do PIN) ────────
 client.on(Events.MessageCreate, async (msg: Message) => {
   if (msg.author.bot) return;
 
   const content = msg.content.trim();
-  if (!content.startsWith('/vincular') && !content.startsWith('!vincular') && !content.toLowerCase().startsWith('vincular')) {
-    return;
-  }
 
-  // Se o usuário mandar em canal público, avisa para mandar no privado
+  // Se o usuário mandar em canal público de servidor, orienta a mandar no privado
   if (msg.guild !== null && !msg.channel.isDMBased()) {
-    try {
-      await msg.reply('🔒 Para proteger seu PIN, por favor envie o comando `/vincular <PIN>` em uma **mensagem privada (DM)** para mim!');
-      if (msg.deletable) {
-        await msg.delete().catch(() => {});
-      }
-    } catch { /* ignora */ }
+    if (content.startsWith('/vincular') || content.startsWith('!vincular') || content.toLowerCase().startsWith('vincular') || /^\d{6}$/.test(content)) {
+      try {
+        await msg.reply('🔒 Para proteger seu PIN, por favor me envie uma **mensagem privada (DM)** com seu PIN.');
+        if (msg.deletable) {
+          await msg.delete().catch(() => {});
+        }
+      } catch { /* ignora */ }
+    }
     return;
   }
 
-  const parts = content.split(/\s+/);
-  const pin = parts[1];
+  // Em mensagem privada (DM):
+  // Caso A: Usuário enviou apenas o PIN de 6 dígitos direto
+  if (/^\d{6}$/.test(content)) {
+    await processarVinculo(content, msg.author.id, async (text) => {
+      await msg.reply(text);
+    });
+    return;
+  }
 
-  await processarVinculo(pin, msg.author.id, async (text) => {
-    await msg.reply(text);
-  });
+  // Caso B: Usuário enviou com prefixo /vincular, !vincular ou vincular
+  if (content.startsWith('/vincular') || content.startsWith('!vincular') || content.toLowerCase().startsWith('vincular')) {
+    const parts = content.split(/\s+/);
+    const pin = parts[1] ?? '';
+    await processarVinculo(pin, msg.author.id, async (text) => {
+      await msg.reply(text);
+    });
+    return;
+  }
+
+  // Caso C: Qualquer outra mensagem em DM recebe orientação rápida
+  await msg.reply(
+    'Para vincular sua conta ao Portal de Tarefas, envie apenas o seu **PIN de 6 dígitos** aqui no chat (ou use `/vincular <PIN>`).'
+  );
 });
 
 // ── 2. Resposta a Slash Commands (/vincular pin:XXXXXX) ────────────────────────
