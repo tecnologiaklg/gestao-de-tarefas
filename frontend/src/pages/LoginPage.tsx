@@ -196,31 +196,9 @@ export function LoginPage() {
           <>
             <IconLink />
             <h1 className="login-title" style={{ fontSize: 'var(--font-lg)' }}>Vincule seu Discord</h1>
-            <p className="login-sub" style={{ marginBottom: 'var(--space-5)' }}>
-              Você ainda não vinculou sua conta Discord.<br />
-              <strong>O vínculo é obrigatório para acessar o sistema.</strong>
+            <p className="login-sub" style={{ marginBottom: 'var(--space-4)' }}>
+              Para acessar o portal, vincule sua conta do Discord uma única vez.
             </p>
-
-            <a
-              href={DISCORD_BOT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary full-width"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'var(--space-2)',
-                marginBottom: 'var(--space-4)',
-                background: '#5865F2',
-                borderColor: '#4752C4',
-                color: '#fff',
-                height: 42,
-              }}
-            >
-              <IconDiscord />
-              <span>Falar com o Bot no Discord ↗</span>
-            </a>
 
             <div style={{
               background: 'var(--stone-50)',
@@ -228,35 +206,79 @@ export function LoginPage() {
               borderRadius: 'var(--radius-lg)',
               padding: 'var(--space-4) var(--space-5)',
               textAlign: 'left',
-              marginBottom: 'var(--space-5)',
+              marginBottom: 'var(--space-4)',
             }}>
-              <p style={{ fontSize: 'var(--font-sm)', fontWeight: 700, color: 'var(--stone-700)', marginBottom: 'var(--space-2)' }}>
-                Como vincular:
+              <p style={{ fontSize: 'var(--font-xs)', fontWeight: 700, color: 'var(--stone-500)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-3)' }}>
+                Como vincular (escolha uma opção):
               </p>
-              <ol style={{ fontSize: 'var(--font-sm)', color: 'var(--stone-600)', paddingLeft: 'var(--space-5)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-                <li>Abra a conversa com o bot no Discord pelo botão acima</li>
-                <li>Envie o comando com o seu PIN:</li>
-              </ol>
-              <div style={{
-                background: 'var(--stone-900)',
-                color: '#86EFAC',
-                borderRadius: 'var(--radius-md)',
-                padding: 'var(--space-2) var(--space-3)',
-                fontFamily: "'SF Mono', 'Fira Code', monospace",
-                fontSize: 'var(--font-sm)',
-                marginTop: 'var(--space-2)',
-                textAlign: 'center',
-                letterSpacing: '0.05em',
-              }}>
-                /vincular {pin || '<seu PIN>'}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                <div>
+                  <strong style={{ fontSize: 'var(--font-sm)', color: 'var(--stone-800)' }}>1. No servidor da empresa (Mais rápido):</strong>
+                  <p style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-500)', marginTop: 2 }}>
+                    Em qualquer canal do servidor, digite o comando abaixo (a resposta é 100% privada para você):
+                  </p>
+                  <div style={{
+                    background: 'var(--stone-900)',
+                    color: '#86EFAC',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '8px 12px',
+                    fontFamily: "'SF Mono', 'Fira Code', monospace",
+                    fontSize: 'var(--font-sm)',
+                    marginTop: 6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                    <span>/vincular {pin}</span>
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(`/vincular ${pin}`)}
+                      style={{
+                        background: 'rgba(255,255,255,0.15)',
+                        border: 'none',
+                        color: '#fff',
+                        borderRadius: 4,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--stone-200)', paddingTop: 'var(--space-3)' }}>
+                  <strong style={{ fontSize: 'var(--font-sm)', color: 'var(--stone-800)' }}>2. Por mensagem direta (DM):</strong>
+                  <p style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-500)', marginTop: 2 }}>
+                    No Discord, procure o bot <strong>Portal de Tarefas</strong> na lista de membros e envie apenas o seu PIN:
+                  </p>
+                  <div style={{
+                    background: 'var(--stone-100)',
+                    border: '1px solid var(--stone-300)',
+                    color: 'var(--stone-900)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '6px 12px',
+                    fontFamily: "'SF Mono', 'Fira Code', monospace",
+                    fontWeight: 700,
+                    fontSize: 'var(--font-sm)',
+                    marginTop: 6,
+                    display: 'inline-block',
+                    letterSpacing: '0.1em',
+                  }}>
+                    {pin}
+                  </div>
+                </div>
               </div>
-              <p style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-400)', marginTop: 'var(--space-2)', textAlign: 'center' }}>
-                Após vincular no Discord, clique em voltar e entre com seu PIN.
-              </p>
             </div>
 
+            <Button variant="primary" className="full-width" style={{ marginBottom: 'var(--space-2)' }} onClick={handleVoltar}>
+              Já vinculei, entrar no portal →
+            </Button>
             <Button variant="secondary" className="full-width" onClick={handleVoltar}>
-              ← Voltar ao login
+              ← Voltar
             </Button>
           </>
         )}
