@@ -1182,14 +1182,14 @@ a { color: inherit; text-decoration: none; }
 
 .pagination-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-/* ── Cards de Setor ──────────────────────────────────────── */
+/* ── Cards de Setor (Design Corporativo Refinado) ────────── */
 .sector-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--space-4);
   overflow-y: auto;
   align-content: start;
-  align-items: start;
+  align-items: stretch;
   flex: 1;
   min-height: 0;
   padding: 4px;
@@ -1199,37 +1199,145 @@ a { color: inherit; text-decoration: none; }
   background: var(--bg-surface);
   border: 1px solid var(--stone-200);
   border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  padding: var(--space-4) var(--space-5);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: var(--space-3);
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 1px 3px rgba(22, 22, 19, 0.04);
 }
 
-.sector-card:hover { box-shadow: var(--shadow-md); border-color: var(--stone-300); }
+.sector-card:hover {
+  border-color: var(--color-primary-mid);
+  box-shadow: 0 4px 12px -2px rgba(22, 22, 19, 0.08);
+  transform: translateY(-1px);
+}
+
+.sector-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sector-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.sector-icon-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sector-info-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
 
 .sector-card-name {
-  font-size: var(--font-lg);
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--stone-900);
   letter-spacing: -.02em;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.sector-meta {
-  font-size: var(--font-sm);
+.sector-members-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-xs);
   color: var(--stone-500);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  font-weight: 500;
 }
 
-.sector-card-footer {
+.sector-members-pill svg {
+  color: var(--stone-400);
+}
+
+.sector-edit-btn {
+  font-size: var(--font-xs);
+  color: var(--stone-600);
+  border: 1px solid var(--stone-200);
+  padding: 4px 9px;
+  border-radius: var(--radius-md);
+  background: var(--stone-50);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-weight: 500;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.sector-edit-btn:hover {
+  background: var(--stone-100);
+  color: var(--stone-900);
+  border-color: var(--stone-300);
+}
+
+.sector-card-body {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--stone-150);
+}
+
+.sector-coord-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sector-coord-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--stone-400);
+}
+
+.sector-coord-value {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--stone-100);
+  gap: 6px;
+  font-size: var(--font-xs);
+  color: var(--stone-700);
+}
+
+.sector-coord-value svg {
+  color: var(--stone-400);
+  flex-shrink: 0;
+}
+
+.sector-coord-value .has-coord {
+  font-weight: 600;
+  color: var(--stone-800);
+}
+
+.sector-coord-value .no-coord {
+  color: var(--stone-400);
+  font-style: italic;
 }
 
 /* ── Login Page ──────────────────────────────────────────── */

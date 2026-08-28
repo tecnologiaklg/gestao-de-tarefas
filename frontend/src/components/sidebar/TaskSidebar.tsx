@@ -147,6 +147,8 @@ export function TaskSidebar({ tarefa, onClose }: Props) {
                     onChange={e => setComent(e.target.value)}
                     placeholder="Escreva um comentário…"
                     rows={3}
+                    autoComplete="off"
+                    spellCheck={false}
                   />
                   <Button variant="primary" size="sm" loading={sending} disabled={!coment.trim()} onClick={handleEnviarComentario}>
                     Enviar

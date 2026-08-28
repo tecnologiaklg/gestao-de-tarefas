@@ -78,7 +78,9 @@ function CreateUserModal({ setores, onClose, onSaved }: { setores: Array<{ id: n
               className="form-input"
               value={form.nome}
               onChange={set('nome')}
-              placeholder="Ex: Pedro Silva"
+              placeholder="Ex: João Zanin"
+              autoComplete="off"
+              spellCheck={false}
               autoFocus
             />
             <span style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-400)', marginTop: 2 }}>
@@ -96,6 +98,8 @@ function CreateUserModal({ setores, onClose, onSaved }: { setores: Array<{ id: n
                 placeholder="______"
                 maxLength={6}
                 inputMode="numeric"
+                autoComplete="off"
+                spellCheck={false}
                 style={{
                   fontFamily: "'SF Mono', 'Fira Code', monospace",
                   fontSize: 'var(--font-md)',
@@ -189,12 +193,12 @@ export function RootUsuariosPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Nome</th>
-                <th style={{ width: 130 }}>Cargo</th>
-                <th style={{ width: 160 }}>Setor</th>
-                <th style={{ width: 110 }}>Situação</th>
-                <th style={{ width: 130 }}>Discord</th>
-                <th style={{ width: 100 }}>Ações</th>
+                <th style={{ width: '28%' }}>Nome</th>
+                <th style={{ width: '18%' }}>Cargo</th>
+                <th style={{ width: '20%' }}>Setor</th>
+                <th style={{ width: '14%' }}>Situação</th>
+                <th style={{ width: '12%' }}>Discord</th>
+                <th style={{ width: '8%', textAlign: 'right' }}>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -245,7 +249,7 @@ export function RootUsuariosPage() {
                       <span style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-400)' }}>Não vinculado</span>
                     )}
                   </td>
-                  <td>
+                  <td style={{ textAlign: 'right' }}>
                     <Button
                       variant={u.ativo ? 'danger' : 'secondary'}
                       size="sm"

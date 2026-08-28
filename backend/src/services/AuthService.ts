@@ -62,20 +62,19 @@ export const AuthService = {
     const code = gerarCodigo();
     pendingCodes.set(code, { userId: usuario.id, expiresAt: Date.now() + 5 * 60 * 1000 });
 
-    const agora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+    const primeiroNome = usuario.nome ? usuario.nome.split(' ')[0] : 'colaborador';
 
     // Envia DM com o código (não bloqueia o response)
     axios.post(`${env.BOT_INTERNAL_URL}/notify`, {
       discord_id: usuario.discord_id,
       mensagem: [
-        `🔐 **Confirmação de acesso — ${agora}**`,
+        `👋 Olá, **${primeiroNome}**!`,
         ``,
-        `Alguém usou seu PIN para acessar o portal de tarefas.`,
+        `Aqui está seu código de acesso ao **Portal de Tarefas**:`,
         ``,
-        `**Código de confirmação:** \`${code}\``,
+        `🔑 **Código:** \`${code}\``,
         ``,
-        `Digite este código no site para concluir o login.`,
-        `_O código expira em 5 minutos. Se não foi você, ignore._`,
+        `_Digite este código no portal para entrar. Tenha um excelente trabalho!_ ✨`,
       ].join('\n'),
     }).catch((err: unknown) => {
       console.warn('[AuthService] Falha ao enviar código Discord:', err instanceof Error ? err.message : err);

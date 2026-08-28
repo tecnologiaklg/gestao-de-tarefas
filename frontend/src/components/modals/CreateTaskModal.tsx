@@ -97,7 +97,7 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
             <button className="sidebar-panel-close" onClick={onClose}>✕</button>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="off">
             <div className="modal-body" style={{ padding: '14px 20px', gap: '10px' }}>
               {error && <div className="alert alert-error" style={{ padding: '6px 10px', fontSize: 'var(--font-xs)' }}>{error}</div>}
 
@@ -112,6 +112,8 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                   onChange={set('titulo')}
                   placeholder="Título da tarefa"
                   maxLength={255}
+                  autoComplete="off"
+                  spellCheck={false}
                   autoFocus
                   style={{ padding: '6px 10px' }}
                 />
@@ -128,6 +130,8 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                   onChange={set('descricao')}
                   placeholder="Descreva o que precisa ser feito…"
                   rows={2}
+                  autoComplete="off"
+                  spellCheck={false}
                   style={{ padding: '6px 10px', minHeight: 48 }}
                 />
               </div>

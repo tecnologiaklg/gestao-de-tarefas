@@ -26,6 +26,8 @@ export function FilterBar({ filters, onChange }: Props) {
           placeholder="Buscar tarefa…"
           value={filters.search}
           onChange={set('search')}
+          autoComplete="off"
+          spellCheck={false}
         />
       </div>
 

@@ -138,7 +138,7 @@ export function LoginPage() {
             <h1 className="login-title">Portal de Tarefas</h1>
             <p className="login-sub">Digite seu PIN de 6 dígitos para acessar a plataforma</p>
 
-            <form onSubmit={handlePinSubmit}>
+            <form onSubmit={handlePinSubmit} autoComplete="off">
               <div style={{ marginBottom: 'var(--space-6)' }}>
                 <PinInput value={pin} onChange={handlePinChange} disabled={loading} />
               </div>
@@ -153,6 +153,8 @@ export function LoginPage() {
                     value={adminToken}
                     onChange={e => { setAdminToken(e.target.value); if (error) setError(''); }}
                     placeholder="Token secreto do Root"
+                    autoComplete="new-password"
+                    spellCheck={false}
                     autoFocus
                   />
                 </div>

@@ -24,6 +24,8 @@ export function WaitingReasonModal({ onConfirm, onCancel }: Props) {
               value={motivo}
               onChange={e => setMotivo(e.target.value)}
               placeholder="Descreva o motivo..."
+              autoComplete="off"
+              spellCheck={false}
               autoFocus
               rows={3}
             />

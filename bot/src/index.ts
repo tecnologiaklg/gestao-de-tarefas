@@ -11,6 +11,7 @@ import {
   Routes,
   SlashCommandBuilder,
   ChatInputCommandInteraction,
+  ActivityType,
 } from 'discord.js';
 import express, { Request, Response } from 'express';
 import axios from 'axios';
@@ -172,24 +173,45 @@ async function registrarSlashCommands(clientId: string) {
   }
 }
 
-// ── Cron: resumo diário às 08:00 BRT ─────────────────────────────────────────
-cron.schedule('0 8 * * *', async () => {
-  console.log('[bot-cron] Disparando resumo diário...');
+// ── Cron: resumo diário às 08:00 BRT (Segunda a Sexta) ───────────────────────────
+cron.schedule('0 8 * * 1-5', async () => {
+  console.log('[bot-cron] Disparando resumo matinal...');
   try {
-    const { data: usuarios } = await axios.get<Array<{ id: number; discord_id: string }>>(
+    const hojeStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', timeZone: 'America/Sao_Paulo' }).toLowerCase();
+    const isSegunda = hojeStr.includes('segunda');
+
+    const { data: usuarios } = await axios.get<Array<{ id: number; discord_id: string; nome?: string }>>(
       `${BACKEND_URL}/api/discord/usuarios-ativos`
     );
+
     for (const u of usuarios) {
       try {
         const { data: kpi } = await axios.get(`${BACKEND_URL}/api/discord/resumo/${u.id}`);
-        if (kpi.abertas === 0 && kpi.atrasadas === 0) continue;
-        await sendDM(u.discord_id,
-          `📋 **Bom dia! Seu resumo de tarefas:**\n` +
-          `• 📌 Abertas: **${kpi.abertas}**\n` +
-          `• ⚠️ Atrasadas: **${kpi.atrasadas}**\n` +
-          `• ⚡ Em andamento: **${kpi.emAndamento}**\n` +
-          `• ✅ Concluídas (7d): **${kpi.concluidas7d}**`
-        );
+        if (kpi.abertas === 0 && kpi.atrasadas === 0 && kpi.emAndamento === 0) continue;
+
+        const primeiroNome = u.nome ? u.nome.split(' ')[0] : 'colaborador';
+
+        if (isSegunda) {
+          await sendDM(u.discord_id,
+            `☀️ **Bom dia e uma excelente semana, ${primeiroNome}!**\n\n` +
+            `Vamos iniciar a semana alinhados com suas prioridades no **Portal de Tarefas**:\n\n` +
+            `📊 **Seu resumo da semana:**\n` +
+            `• 📌 Abertas: **${kpi.abertas}**\n` +
+            `• ⚡ Em andamento: **${kpi.emAndamento}**\n` +
+            `• ⚠️ Atrasadas: **${kpi.atrasadas}**\n` +
+            `• ✅ Concluídas nos últimos 7 dias: **${kpi.concluidas7d}**\n\n` +
+            `Desejamos uma semana muito produtiva! 🚀`
+          );
+        } else {
+          await sendDM(u.discord_id,
+            `📋 **Bom dia, ${primeiroNome}!** Aqui está seu resumo de hoje:\n\n` +
+            `• 📌 Abertas: **${kpi.abertas}**\n` +
+            `• ⚡ Em andamento: **${kpi.emAndamento}**\n` +
+            `• ⚠️ Atrasadas: **${kpi.atrasadas}**\n` +
+            `• ✅ Concluídas nos últimos 7 dias: **${kpi.concluidas7d}**\n\n` +
+            `Bom trabalho! ✨`
+          );
+        }
       } catch { /* ignora falha individual */ }
     }
   } catch (err) {
@@ -217,7 +239,14 @@ app.get('/health', (_req: Request, res: Response) => res.json({ status: 'ok', bo
 // ── Boot ───────────────────────────────────────────────────────────────────────
 client.once(Events.ClientReady, async () => {
   console.log(`[bot] Conectado ao Discord com sucesso como: ${client.user?.tag} (ID: ${client.user?.id})`);
+
   if (client.user) {
+    // Define status como Online e atividade personalizada
+    client.user.setPresence({
+      status: 'online',
+      activities: [{ name: 'Portal de Tarefas 📋', type: ActivityType.Watching }],
+    });
+
     await registrarSlashCommands(client.user.id);
   }
   app.listen(BOT_PORT, () => console.log(`[bot-http] Servidor de notificações ouvindo na porta ${BOT_PORT}`));

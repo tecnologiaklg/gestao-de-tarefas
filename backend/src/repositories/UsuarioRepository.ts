@@ -40,9 +40,9 @@ export const UsuarioRepository = {
     return rows;
   },
 
-  findActiveDiscordUsers: async (): Promise<Array<{ id: number; discord_id: string }>> => {
-    const { rows } = await query<{ id: number; discord_id: string }>(
-      'SELECT id, discord_id FROM usuarios WHERE discord_vinculado = TRUE AND ativo = TRUE'
+  findActiveDiscordUsers: async (): Promise<Array<{ id: number; discord_id: string; nome: string }>> => {
+    const { rows } = await query<{ id: number; discord_id: string; nome: string }>(
+      'SELECT id, discord_id, nome FROM usuarios WHERE discord_vinculado = TRUE AND ativo = TRUE'
     );
     return rows;
   },
