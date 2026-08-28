@@ -71,6 +71,7 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
         titulo: form.titulo.trim(),
         descricao: form.descricao.trim() || undefined,
         responsavel_id: parseInt(form.responsavel_id, 10),
+        setor_id: parseInt(form.setor_id, 10),
         prioridade: form.prioridade,
         prazo,
       });

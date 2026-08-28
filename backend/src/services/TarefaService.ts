@@ -56,13 +56,16 @@ export const TarefaService = {
     if (!responsavel) throw new NotFoundError('Responsável não encontrado');
     if (!responsavel.ativo) throw new UnprocessableError('Responsável inativo');
 
-    const setor = await SetorRepository.findById(setor_id);
+    const targetSetorId = (setor_id ? parseInt(setor_id as unknown as string, 10) : null) || responsavel.setor_id;
+    if (!targetSetorId) throw new NotFoundError('Setor não encontrado');
+
+    const setor = await SetorRepository.findById(targetSetorId);
     if (!setor) throw new NotFoundError('Setor não encontrado');
 
     if (!prazo) throw new UnprocessableError('Data e hora de entrega são obrigatórios');
     if (!Object.values(PRIORIDADE).includes(prioridade)) throw new UnprocessableError('Prioridade inválida');
 
-    const { id } = await TarefaRepository.create({ titulo, descricao, criador_id: u.id, responsavel_id, setor_id, prioridade, prazo });
+    const { id } = await TarefaRepository.create({ titulo, descricao, criador_id: u.id, responsavel_id, setor_id: targetSetorId, prioridade, prazo });
     const tarefa = (await TarefaRepository.findById(id))!;
 
     await HistoricoRepository.registrar({ tarefa_id: id, usuario_id: u.id, tipo: 'CRIACAO', descricao: `Criada por ${u.nome}` });
