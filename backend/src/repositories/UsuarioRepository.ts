@@ -13,7 +13,7 @@ export const UsuarioRepository = {
   findById: async (id: number): Promise<Usuario | null> => {
     const { rows } = await query<Usuario>(
       `SELECT u.id, u.nome, u.cargo, u.setor_id, s.nome AS setor_nome,
-              u.ativo, u.discord_id, u.discord_vinculado
+              u.ativo, u.discord_id, u.discord_vinculado, u.ultimo_login_discord
        FROM usuarios u LEFT JOIN setores s ON s.id = u.setor_id
        WHERE u.id = $1 LIMIT 1`, [id]
     );
@@ -23,7 +23,7 @@ export const UsuarioRepository = {
   findAll: async (): Promise<Usuario[]> => {
     const { rows } = await query<Usuario>(
       `SELECT u.id, u.nome, u.cargo, u.setor_id, s.nome AS setor_nome,
-              u.ativo, u.discord_vinculado
+              u.ativo, u.discord_vinculado, u.ultimo_login_discord
        FROM usuarios u LEFT JOIN setores s ON s.id = u.setor_id
        ORDER BY u.nome`
     );
@@ -83,5 +83,17 @@ export const UsuarioRepository = {
        WHERE responsavel_id = $1 AND status IN ('PENDENTE','EM_ANDAMENTO','AGUARDANDO')`, [id]
     );
     return parseInt(rows[0].total, 10) > 0;
+  },
+
+  updateUltimoLoginDiscord: async (id: number): Promise<void> => {
+    await query('UPDATE usuarios SET ultimo_login_discord = NOW() WHERE id = $1', [id]);
+  },
+
+  ensureColumns: async (): Promise<void> => {
+    try {
+      await query('ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ultimo_login_discord TIMESTAMPTZ;');
+    } catch (e) {
+      console.warn('[UsuarioRepository] Erro ao garantir coluna ultimo_login_discord:', e);
+    }
   },
 };

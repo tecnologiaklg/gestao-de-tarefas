@@ -26,6 +26,16 @@ function limparExpirados() {
   }
 }
 
+function getInicioDaSemana(): Date {
+  const agora = new Date();
+  const diaSemana = agora.getDay(); // 0=Dom, 1=Seg, ..., 6=Sab
+  const diff = diaSemana === 0 ? 6 : diaSemana - 1;
+  const segunda = new Date(agora);
+  segunda.setDate(agora.getDate() - diff);
+  segunda.setHours(0, 0, 0, 0);
+  return segunda;
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 
 export const AuthService = {
@@ -57,24 +67,34 @@ export const AuthService = {
       };
     }
 
-    // CASO 2 — Discord vinculado → gera código de confirmação e envia DM
+    // CASO 2 — Já confirmou no Discord nesta semana → Login direto com o PIN
+    const inicioDaSemana = getInicioDaSemana();
+    const ultimoLoginDiscord = usuario.ultimo_login_discord ? new Date(usuario.ultimo_login_discord) : null;
+    const jaConfirmouNaSemana = ultimoLoginDiscord && ultimoLoginDiscord >= inicioDaSemana;
+
+    if (jaConfirmouNaSemana) {
+      const payload = { id: usuario.id, nome: usuario.nome, cargo: usuario.cargo, setor_id: usuario.setor_id };
+      const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);
+      await LogRepository.registrar({
+        usuario_id: usuario.id,
+        tipo_evento: 'LOGIN',
+        descricao: `Login direto via PIN — ${usuario.nome}`,
+      });
+      return { status: 'ok' as const, token, user: payload };
+    }
+
+    // CASO 3 — Primeira confirmação da semana → gera código e envia no Discord
     limparExpirados();
     const code = gerarCodigo();
     pendingCodes.set(code, { userId: usuario.id, expiresAt: Date.now() + 5 * 60 * 1000 });
 
-    const primeiroNome = usuario.nome ? usuario.nome.split(' ')[0] : 'colaborador';
-
-    // Envia DM com o código (não bloqueia o response)
+    // Envia DM no Discord (direto e sem clichês)
     axios.post(`${env.BOT_INTERNAL_URL}/notify`, {
       discord_id: usuario.discord_id,
       mensagem: [
-        `👋 Olá, **${primeiroNome}**!`,
+        `Código de acesso ao **Portal de Tarefas**: **\`${code}\`**`,
         ``,
-        `Aqui está seu código de acesso ao **Portal de Tarefas**:`,
-        ``,
-        `🔑 **Código:** \`${code}\``,
-        ``,
-        `_Digite este código no portal para entrar. Tenha um excelente trabalho!_ ✨`,
+        `Digite este código no portal para validar seu acesso desta semana.`,
       ].join('\n'),
     }).catch((err: unknown) => {
       console.warn('[AuthService] Falha ao enviar código Discord:', err instanceof Error ? err.message : err);
@@ -83,12 +103,12 @@ export const AuthService = {
     await LogRepository.registrar({
       usuario_id: usuario.id,
       tipo_evento: 'LOGIN_AGUARDANDO_DISCORD',
-      descricao: `Código enviado para Discord de ${usuario.nome}`,
+      descricao: `Código semanal enviado para Discord de ${usuario.nome}`,
     });
 
     return {
       status: 'discord_confirmation_required' as const,
-      message: 'Verifique seu Discord. Um código de confirmação foi enviado.',
+      message: 'Confirmação semanal: digite o código enviado no seu Discord.',
     };
   },
 
@@ -104,6 +124,9 @@ export const AuthService = {
     const usuario = await UsuarioRepository.findById(pending.userId);
     if (!usuario) throw new UnauthorizedError('Usuário não encontrado');
     if (!usuario.ativo) throw new ForbiddenError('Usuário inativo');
+
+    // Registra a confirmação semanal no banco
+    await UsuarioRepository.updateUltimoLoginDiscord(usuario.id);
 
     const payload = { id: usuario.id, nome: usuario.nome, cargo: usuario.cargo, setor_id: usuario.setor_id };
     const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);

@@ -12,6 +12,7 @@ export interface Usuario {
   ativo: boolean;
   discord_id?: string | null;
   discord_vinculado: boolean;
+  ultimo_login_discord?: Date | string | null;
 }
 
 export interface Setor {

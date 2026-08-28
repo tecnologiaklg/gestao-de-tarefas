@@ -193,23 +193,20 @@ cron.schedule('0 8 * * 1-5', async () => {
 
         if (isSegunda) {
           await sendDM(u.discord_id,
-            `☀️ **Bom dia e uma excelente semana, ${primeiroNome}!**\n\n` +
-            `Vamos iniciar a semana alinhados com suas prioridades no **Portal de Tarefas**:\n\n` +
-            `📊 **Seu resumo da semana:**\n` +
-            `• 📌 Abertas: **${kpi.abertas}**\n` +
-            `• ⚡ Em andamento: **${kpi.emAndamento}**\n` +
-            `• ⚠️ Atrasadas: **${kpi.atrasadas}**\n` +
-            `• ✅ Concluídas nos últimos 7 dias: **${kpi.concluidas7d}**\n\n` +
-            `Desejamos uma semana muito produtiva! 🚀`
+            `**Resumo Semanal de Tarefas — KLG**\n\n` +
+            `• Abertas: **${kpi.abertas}**\n` +
+            `• Em andamento: **${kpi.emAndamento}**\n` +
+            `• Atrasadas: **${kpi.atrasadas}**\n` +
+            `• Concluídas nos últimos 7 dias: **${kpi.concluidas7d}**\n\n` +
+            `Acesse o portal: https://tarefas.klgdobrasil.com.br`
           );
         } else {
           await sendDM(u.discord_id,
-            `📋 **Bom dia, ${primeiroNome}!** Aqui está seu resumo de hoje:\n\n` +
-            `• 📌 Abertas: **${kpi.abertas}**\n` +
-            `• ⚡ Em andamento: **${kpi.emAndamento}**\n` +
-            `• ⚠️ Atrasadas: **${kpi.atrasadas}**\n` +
-            `• ✅ Concluídas nos últimos 7 dias: **${kpi.concluidas7d}**\n\n` +
-            `Bom trabalho! ✨`
+            `**Resumo de Tarefas — ${primeiroNome}**\n\n` +
+            `• Abertas: **${kpi.abertas}**\n` +
+            `• Em andamento: **${kpi.emAndamento}**\n` +
+            `• Atrasadas: **${kpi.atrasadas}**\n` +
+            `• Concluídas (7d): **${kpi.concluidas7d}**`
           );
         }
       } catch { /* ignora falha individual */ }
