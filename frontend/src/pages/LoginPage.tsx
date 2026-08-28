@@ -4,6 +4,7 @@ import { PinInput } from '../components/ui/PinInput';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
+import { AuthUser } from '../types';
 
 const DISCORD_BOT_URL = 'https://discord.com/oauth2/authorize?client_id=1540424028471169125';
 
@@ -36,7 +37,7 @@ function IconDiscord() {
 }
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { setSession } = useAuth();
   const navigate  = useNavigate();
 
   const [step, setStep]         = useState<Step>('pin');
@@ -65,8 +66,8 @@ export function LoginPage() {
       const res = await authService.login(pin, showToken ? adminToken : undefined);
 
       if (res.status === 'ok' && res.token && res.user) {
-        // Root entra direto
-        await login(pin, showToken ? adminToken : undefined);
+        // Root entra direto sem chamada duplicada
+        setSession(res.token, res.user as AuthUser);
         navigate('/root/equipes', { replace: true });
         return;
       }
@@ -97,10 +98,9 @@ export function LoginPage() {
     try {
       const res = await authService.confirmar(code.trim());
       if (res.status === 'ok' && res.token && res.user) {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res.user));
-        // Força reload do contexto e redireciona
-        window.location.href = '/minhas-tarefas';
+        setSession(res.token, res.user as AuthUser);
+        navigate('/minhas-tarefas', { replace: true });
+        return;
       }
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { error?: string } } }).response?.data?.error;

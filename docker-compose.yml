@@ -96,6 +96,7 @@ services:
 
     networks:
       - proxy
+      - internal
 
     depends_on:
       - backend

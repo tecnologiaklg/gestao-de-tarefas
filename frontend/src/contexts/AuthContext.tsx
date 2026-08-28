@@ -7,6 +7,7 @@ interface AuthCtx {
   token: string | null;
   isRoot: boolean;
   login: (pin: string, adminToken?: string) => Promise<void>;
+  setSession: (token: string, user: AuthUser) => void;
   logout: () => void;
   loading: boolean;
 }
@@ -31,14 +32,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
+  const setSession = (t: string, u: AuthUser) => {
+    localStorage.setItem('token', t);
+    localStorage.setItem('user', JSON.stringify(u));
+    setToken(t);
+    setUser(u);
+  };
+
   const login = async (pin: string, adminToken?: string) => {
     const result = await authService.login(pin, adminToken);
     // Só persiste sessão se o status for 'ok' (root entra direto)
     if (result.status === 'ok' && result.token && result.user) {
-      localStorage.setItem('token', result.token);
-      localStorage.setItem('user', JSON.stringify(result.user));
-      setToken(result.token);
-      setUser(result.user as AuthUser);
+      setSession(result.token, result.user as AuthUser);
     }
   };
 
@@ -52,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isRoot = user?.role === 'ROOT';
 
   return (
-    <AuthContext.Provider value={{ user, token, isRoot, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, isRoot, login, setSession, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
