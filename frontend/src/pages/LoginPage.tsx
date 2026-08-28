@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PinInput } from '../components/ui/PinInput';
 import { Button } from '../components/ui/Button';
@@ -49,8 +49,16 @@ export function LoginPage() {
   const [error, setError]       = useState('');
   const [message, setMessage]   = useState('');
 
+  // Limpa mensagem de erro automaticamente após 4 segundos
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(''), 4000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
   const handlePinChange = (v: string) => {
     setPin(v);
+    if (error) setError('');
     setShowToken(v === '000000');
     if (v !== '000000') setAdminToken('');
   };
@@ -143,7 +151,7 @@ export function LoginPage() {
                     type="password"
                     className="form-input"
                     value={adminToken}
-                    onChange={e => setAdminToken(e.target.value)}
+                    onChange={e => { setAdminToken(e.target.value); if (error) setError(''); }}
                     placeholder="Token secreto do Root"
                     autoFocus
                   />
@@ -267,7 +275,7 @@ export function LoginPage() {
                   id="discord-code"
                   className="form-input"
                   value={code}
-                  onChange={e => setCode(e.target.value.toUpperCase())}
+                  onChange={e => { setCode(e.target.value.toUpperCase()); if (error) setError(''); }}
                   placeholder="A3F7K2"
                   maxLength={6}
                   autoFocus

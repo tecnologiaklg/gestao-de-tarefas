@@ -72,8 +72,18 @@ function CreateUserModal({ setores, onClose, onSaved }: { setores: Array<{ id: n
         <div className="modal-body">
           {error && <div className="alert alert-error">{error}</div>}
           <div className="form-group">
-            <label className="form-label">Nome <span className="required">*</span></label>
-            <input id="user-nome" className="form-input" value={form.nome} onChange={set('nome')} placeholder="Nome completo" autoFocus />
+            <label className="form-label">Primeiro e último nome <span className="required">*</span></label>
+            <input
+              id="user-nome"
+              className="form-input"
+              value={form.nome}
+              onChange={set('nome')}
+              placeholder="Ex: Pedro Silva"
+              autoFocus
+            />
+            <span style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-400)', marginTop: 2 }}>
+              Informe o primeiro e último nome (ou nome completo/diferenciador caso existam homônimos na empresa).
+            </span>
           </div>
           <div className="form-group">
             <label className="form-label">PIN (6 dígitos) <span className="required">*</span></label>
