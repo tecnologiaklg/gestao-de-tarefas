@@ -65,14 +65,14 @@
 
   /* Tipografia */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-xs:   0.6875rem;  /* 11px */
-  --font-sm:   0.8125rem;  /* 13px */
-  --font-base: 0.9375rem;  /* 15px */
-  --font-md:   1rem;       /* 16px */
-  --font-lg:   1.125rem;   /* 18px */
-  --font-xl:   1.25rem;    /* 20px */
-  --font-2xl:  1.5rem;     /* 24px */
-  --font-3xl:  1.875rem;   /* 30px */
+  --font-xs:   0.75rem;    /* 12px */
+  --font-sm:   0.875rem;   /* 14px */
+  --font-base: 1rem;       /* 16px */
+  --font-md:   1.0625rem;  /* 17px */
+  --font-lg:   1.25rem;    /* 20px */
+  --font-xl:   1.375rem;   /* 22px */
+  --font-2xl:  1.625rem;   /* 26px */
+  --font-3xl:  2rem;       /* 32px */
 
   /* Espaçamento */
   --space-1:  0.25rem;
@@ -354,7 +354,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .page-title {
-  font-size: var(--font-base);
+  font-size: var(--font-2xl);
   font-weight: 700;
   color: var(--stone-900);
   letter-spacing: -.02em;
@@ -362,9 +362,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 .page-subtitle {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--stone-500);
-  margin-top: 1px;
+  margin-top: 3px;
   font-weight: 400;
 }
 
@@ -1185,12 +1185,14 @@ a { color: inherit; text-decoration: none; }
 /* ── Cards de Setor ──────────────────────────────────────── */
 .sector-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
   overflow-y: auto;
+  align-content: start;
+  align-items: start;
   flex: 1;
   min-height: 0;
-  padding: 2px;
+  padding: 4px;
 }
 
 .sector-card {
@@ -1202,12 +1204,13 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  box-shadow: var(--shadow-xs);
 }
 
 .sector-card:hover { box-shadow: var(--shadow-md); border-color: var(--stone-300); }
 
 .sector-card-name {
-  font-size: var(--font-base);
+  font-size: var(--font-lg);
   font-weight: 700;
   color: var(--stone-900);
   letter-spacing: -.02em;

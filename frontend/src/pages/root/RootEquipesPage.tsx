@@ -102,7 +102,7 @@ export function RootEquipesPage() {
                   <span>{s.coordenadores.map(c => c.nome).join(', ')}</span>
                 </div>
               )}
-              <div style={{ marginTop: 'auto', paddingTop: 'var(--space-3)' }}>
+              <div style={{ marginTop: 'var(--space-2)', paddingTop: 'var(--space-2)' }}>
                 <Button variant="secondary" size="sm" onClick={() => setModal({ setor: s })}>
                   Editar
                 </Button>
