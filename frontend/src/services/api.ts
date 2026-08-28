@@ -13,14 +13,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Redireciona para login em 401
+// Redireciona para login em 401 apenas em rotas autenticadas (não na tentativa de login)
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const isAuthRoute = err.config?.url?.includes('/auth/login') || err.config?.url?.includes('/auth/confirmar');
+    if (err.response?.status === 401 && !isAuthRoute) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(err);
   }
