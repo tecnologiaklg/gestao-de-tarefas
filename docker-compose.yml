@@ -4,9 +4,11 @@
 
 networks:
   proxy:
-    external: true      # rede gerenciada pelo Traefik no host
+    external: true
+    name: ${TRAEFIK_NETWORK}
+
   internal:
-    driver: bridge      # rede interna isolada: backend ↔ db ↔ bot
+    driver: bridge
 
 volumes:
   postgres_data:
@@ -18,86 +20,111 @@ services:
     image: postgres:17-alpine
     container_name: portal_tarefas_db
     restart: always
-    ports:
-      - "5433:5432"     # porta 5433 no host para não colidir com 5432 de outros bancos
+
     networks:
       - internal
+
     environment:
-      POSTGRES_DB:       ${POSTGRES_DB}
-      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db/migrations:/docker-entrypoint-initdb.d:ro
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # ── Backend (Node.js / Express / TypeScript) ─────────────────
+
+  # ── Backend ──────────────────────────────────────────────────
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+
     container_name: portal_tarefas_backend
     restart: always
+
     networks:
       - internal
       - proxy
+
     environment:
-      NODE_ENV:         production
-      PORT:             4000
-      DATABASE_URL:     postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      JWT_SECRET:       ${JWT_SECRET}
-      JWT_EXPIRES_IN:   ${JWT_EXPIRES_IN}
+      NODE_ENV: production
+      PORT: 4000
+
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       ROOT_ADMIN_TOKEN: ${ROOT_ADMIN_TOKEN}
+
       BOT_INTERNAL_URL: http://bot:3001
+
     depends_on:
       db:
         condition: service_healthy
+
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+
       - "traefik.http.routers.portal-backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.portal-backend.entrypoints=websecure"
+      - "traefik.http.routers.portal-backend.tls=true"
       - "traefik.http.routers.portal-backend.tls.certresolver=letsencrypt"
+
       - "traefik.http.services.portal-backend.loadbalancer.server.port=4000"
 
-  # ── Frontend (React + Vite → Nginx) ──────────────────────────
+
+  # ── Frontend ─────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+
     container_name: portal_tarefas_frontend
     restart: always
+
     networks:
       - proxy
+
     depends_on:
       - backend
+
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+
       - "traefik.http.routers.portal-frontend.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.portal-frontend.entrypoints=websecure"
+      - "traefik.http.routers.portal-frontend.tls=true"
       - "traefik.http.routers.portal-frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.portal-frontend.loadbalancer.server.port=80"
-      # Redirect HTTP → HTTPS
-      - "traefik.http.routers.portal-frontend-http.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.portal-frontend-http.entrypoints=web"
-      - "traefik.http.routers.portal-frontend-http.middlewares=portal-redirect-https"
-      - "traefik.http.middlewares.portal-redirect-https.redirectscheme.scheme=https"
 
-  # ── Bot Discord (TypeScript) ──────────────────────────────────
+      - "traefik.http.services.portal-frontend.loadbalancer.server.port=80"
+
+
+  # ── Bot Discord ──────────────────────────────────────────────
   bot:
     build:
       context: ./bot
       dockerfile: Dockerfile
+
     container_name: portal_tarefas_bot
     restart: always
+
     networks:
-      - internal        # apenas rede interna, não exposto externamente
+      - internal
+
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
-      BACKEND_URL:   http://backend:4000
-      BOT_PORT:      3001
+      BACKEND_URL: http://backend:4000
+      BOT_PORT: 3001
