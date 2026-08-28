@@ -117,6 +117,31 @@ export function LoginPage() {
     } finally { setLoading(false); }
   };
 
+  // ── Verifica se o usuário já realizou o vínculo no Discord ────────────────
+  const handleVerificarVinculo = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await authService.login(pin);
+      if (res.status === 'ok' && res.token && res.user) {
+        setSession(res.token, res.user as AuthUser);
+        navigate('/minhas-tarefas', { replace: true });
+        return;
+      }
+      if (res.status === 'discord_confirmation_required') {
+        setMessage(res.message ?? '');
+        setStep('discord_confirm');
+        return;
+      }
+      if (res.status === 'discord_required') {
+        setError('O vínculo ainda não foi concluído no Discord. Envie seu PIN por mensagem privada para o bot.');
+      }
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { error?: string } } }).response?.data?.error;
+      setError(msg ?? 'Erro ao verificar vínculo no Discord.');
+    } finally { setLoading(false); }
+  };
+
   const handleVoltar = () => {
     setStep('pin');
     setPin('');
@@ -175,11 +200,7 @@ export function LoginPage() {
                   </>
                 ) : (
                   <>
-                    <span>Entrar na Plataforma</span>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
+                    <span>Acessar Plataforma →</span>
                   </>
                 )}
               </button>
@@ -197,7 +218,7 @@ export function LoginPage() {
             <IconLink />
             <h1 className="login-title" style={{ fontSize: 'var(--font-lg)' }}>Vincule seu Discord</h1>
             <p className="login-sub" style={{ marginBottom: 'var(--space-4)' }}>
-              Para acessar o portal, vincule sua conta do Discord uma única vez.
+              Para acessar o portal, vincule sua conta do Discord uma única vez por mensagem privada.
             </p>
 
             <a
@@ -229,36 +250,38 @@ export function LoginPage() {
               textAlign: 'left',
               marginBottom: 'var(--space-4)',
             }}>
-              <p style={{ fontSize: 'var(--font-xs)', fontWeight: 700, color: 'var(--stone-500)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 'var(--space-2)' }}>
-                Instruções:
-              </p>
               <p style={{ fontSize: 'var(--font-sm)', color: 'var(--stone-700)', marginBottom: 'var(--space-2)' }}>
-                Clique no botão acima para abrir o app do Discord e envie apenas o seu PIN para o bot:
+                Envie apenas o seu PIN por <strong>mensagem privada (DM)</strong> para o bot <strong>Portal de Tarefas</strong>:
               </p>
+
               <div style={{
-                background: 'var(--stone-900)',
-                color: '#86EFAC',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--stone-200)',
                 borderRadius: 'var(--radius-md)',
                 padding: '8px 12px',
-                fontFamily: "'SF Mono', 'Fira Code', monospace",
-                fontSize: 'var(--font-md)',
-                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                letterSpacing: '0.1em',
               }}>
-                <span>{pin}</span>
+                <span style={{
+                  fontFamily: "'SF Mono', 'Fira Code', monospace",
+                  fontSize: 'var(--font-md)',
+                  fontWeight: 700,
+                  color: 'var(--stone-900)',
+                  letterSpacing: '0.15em',
+                }}>
+                  {pin}
+                </span>
                 <button
                   type="button"
                   onClick={() => navigator.clipboard.writeText(pin)}
                   style={{
-                    background: 'rgba(255,255,255,0.15)',
-                    border: 'none',
-                    color: '#fff',
-                    borderRadius: 4,
-                    padding: '3px 8px',
-                    fontSize: 11,
+                    background: 'var(--stone-100)',
+                    border: '1px solid var(--stone-200)',
+                    color: 'var(--stone-700)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '4px 10px',
+                    fontSize: 'var(--font-xs)',
                     cursor: 'pointer',
                     fontWeight: 600,
                   }}
@@ -266,16 +289,25 @@ export function LoginPage() {
                   Copiar PIN
                 </button>
               </div>
-              <p style={{ fontSize: 'var(--font-xs)', color: 'var(--stone-400)', marginTop: 'var(--space-2)' }}>
-                Se preferir, você também pode usar o comando <code style={{ color: 'var(--stone-700)' }}>/vincular {pin}</code> em qualquer canal do servidor.
-              </p>
             </div>
 
-            <Button variant="primary" className="full-width" style={{ marginBottom: 'var(--space-2)' }} onClick={handleVoltar}>
-              Já vinculei, entrar no portal →
+            {error && <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)', textAlign: 'left' }}>{error}</div>}
+
+            <Button
+              variant="primary"
+              className="full-width"
+              style={{ marginBottom: 'var(--space-2)' }}
+              loading={loading}
+              onClick={handleVerificarVinculo}
+            >
+              Já enviei no Discord, entrar no portal →
             </Button>
-            <Button variant="secondary" className="full-width" onClick={handleVoltar}>
-              ← Voltar
+            <Button
+              variant="ghost"
+              className="full-width"
+              onClick={handleVoltar}
+            >
+              ← Digitar outro PIN
             </Button>
           </>
         )}

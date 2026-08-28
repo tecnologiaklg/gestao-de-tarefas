@@ -106,24 +106,16 @@ async function processarVinculo(pin: string, discordId: string, replyFn: (text: 
   }
 }
 
-// ── 1. Resposta a Mensagens de Texto (/vincular ou envio direto do PIN) ────────
+// ── 1. Resposta a Mensagens de Texto (Exclusivo em DM Privada) ─────────────────
 client.on(Events.MessageCreate, async (msg: Message) => {
   if (msg.author.bot) return;
 
-  const content = msg.content.trim();
-
-  // Se o usuário mandar em canal público de servidor, orienta a mandar no privado
-  if (msg.guild !== null && !msg.channel.isDMBased()) {
-    if (content.startsWith('/vincular') || content.startsWith('!vincular') || content.toLowerCase().startsWith('vincular') || /^\d{6}$/.test(content)) {
-      try {
-        await msg.reply('🔒 Para proteger seu PIN, por favor me envie uma **mensagem privada (DM)** com seu PIN.');
-        if (msg.deletable) {
-          await msg.delete().catch(() => {});
-        }
-      } catch { /* ignora */ }
-    }
+  // Se a mensagem for em canal de servidor, ignora para não poluir os canais da empresa
+  if (msg.guild !== null || !msg.channel.isDMBased()) {
     return;
   }
+
+  const content = msg.content.trim();
 
   // Em mensagem privada (DM):
   // Caso A: Usuário enviou apenas o PIN de 6 dígitos direto
@@ -146,48 +138,9 @@ client.on(Events.MessageCreate, async (msg: Message) => {
 
   // Caso C: Qualquer outra mensagem em DM recebe orientação rápida
   await msg.reply(
-    'Para vincular sua conta ao Portal de Tarefas, envie apenas o seu **PIN de 6 dígitos** aqui no chat (ou use `/vincular <PIN>`).'
+    'Para vincular sua conta ao Portal de Tarefas, envie apenas o seu **PIN de 6 dígitos** aqui no chat privado.'
   );
 });
-
-// ── 2. Resposta a Slash Commands (/vincular pin:XXXXXX) ────────────────────────
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === 'vincular') {
-    const pin = interaction.options.getString('pin') ?? '';
-    await interaction.deferReply({ ephemeral: true });
-
-    await processarVinculo(pin, interaction.user.id, async (text) => {
-      await interaction.editReply(text);
-    });
-  }
-});
-
-// ── 3. Registro dos Slash Commands no Discord ─────────────────────────────────
-async function registrarSlashCommands(clientId: string) {
-  const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
-  const commands = [
-    new SlashCommandBuilder()
-      .setName('vincular')
-      .setDescription('Vincula seu PIN do Portal de Tarefas à sua conta do Discord')
-      .addStringOption(opt =>
-        opt.setName('pin')
-          .setDescription('Seu PIN de 6 dígitos numéricos')
-          .setRequired(true)
-          .setMinLength(6)
-          .setMaxLength(6)
-      ),
-  ].map(c => c.toJSON());
-
-  try {
-    console.log('[bot] Registrando Slash Commands globais no Discord...');
-    await rest.put(Routes.applicationCommands(clientId), { body: commands });
-    console.log('[bot] Slash Commands registrados com sucesso!');
-  } catch (error) {
-    console.warn('[bot] Falha ao registrar Slash Commands:', error);
-  }
-}
 
 // ── Cron: resumo diário às 08:00 BRT (Segunda a Sexta) ───────────────────────────
 cron.schedule('0 8 * * 1-5', async () => {
@@ -259,8 +212,6 @@ client.once(Events.ClientReady, async () => {
       status: 'online',
       activities: [{ name: 'Portal de Tarefas 📋', type: ActivityType.Watching }],
     });
-
-    await registrarSlashCommands(client.user.id);
   }
   app.listen(BOT_PORT, () => console.log(`[bot-http] Servidor de notificações ouvindo na porta ${BOT_PORT}`));
 });
