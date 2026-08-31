@@ -17,12 +17,38 @@ const PERSPECTIVAS: { value: Perspectiva; label: string }[] = [
   { value: 'criadas_por_mim', label: 'Criadas por mim' },
 ];
 
-const PRIORIDADES = ['', 'BAIXA', 'NORMAL', 'URGENTE'] as const;
-
 function SearchIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function IconFlag() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+      <line x1="4" y1="22" x2="4" y2="15" />
+    </svg>
+  );
+}
+
+function IconCalendar() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
+function IconClose() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
@@ -67,9 +93,8 @@ export function TarefasPage() {
     return 'para_mim';
   };
 
-  // Permite arrastar se for responsável (o KanbanBoard já valida internamente caso seja eu_para_outros)
   const isResponsavel = true;
-  const hasFilters = search || prioridade || prazo;
+  const hasFilters = Boolean(search || prioridade || prazo);
 
   return (
     <AppLayout>
@@ -101,37 +126,64 @@ export function TarefasPage() {
         ))}
       </div>
 
-      {/* Barra de busca/filtros */}
+      {/* Barra de busca/filtros moderna */}
       <div className="filter-bar">
         <div className="filter-search">
           <span className="search-icon"><SearchIcon /></span>
           <input
             id="filter-search"
             type="text"
-            placeholder="Buscar tarefa…"
+            placeholder="Buscar por título…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             autoComplete="off"
             spellCheck={false}
           />
         </div>
-        <select id="filter-prioridade" className="filter-select" value={prioridade} onChange={e => setPrioridade(e.target.value)}>
-          <option value="">Todas as prioridades</option>
-          <option value="BAIXA">Baixa</option>
-          <option value="NORMAL">Normal</option>
-          <option value="URGENTE">Urgente</option>
-        </select>
-        <input
-          id="filter-prazo"
-          type="date"
-          className="filter-select"
-          value={prazo}
-          onChange={e => setPrazo(e.target.value)}
-        />
+
+        <div className="filter-divider" />
+
+        {/* Dropdown de Prioridade Estilizado com Ícone */}
+        <div className="filter-control-wrap" data-active={prioridade ? 'true' : 'false'}>
+          <span className="filter-control-icon"><IconFlag /></span>
+          <select
+            id="filter-prioridade"
+            className="filter-select"
+            value={prioridade}
+            onChange={e => setPrioridade(e.target.value)}
+          >
+            <option value="">Todas prioridades</option>
+            <option value="BAIXA">Baixa</option>
+            <option value="NORMAL">Normal</option>
+            <option value="URGENTE">Urgente</option>
+          </select>
+        </div>
+
+        {/* Campo de Data Estilizado com Ícone de Calendário */}
+        <div className="filter-control-wrap" data-active={prazo ? 'true' : 'false'}>
+          <span className="filter-control-icon"><IconCalendar /></span>
+          <input
+            id="filter-prazo"
+            type="date"
+            className="filter-date-input"
+            value={prazo}
+            onChange={e => setPrazo(e.target.value)}
+            title="Filtrar por data limite"
+          />
+        </div>
+
         {hasFilters && (
-          <button className="btn btn-ghost btn-sm" onClick={() => { setSearch(''); setPrioridade(''); setPrazo(''); }}>
-            Limpar filtros
-          </button>
+          <>
+            <div className="filter-divider" />
+            <button
+              className="filter-clear-btn"
+              onClick={() => { setSearch(''); setPrioridade(''); setPrazo(''); }}
+              title="Limpar todos os filtros"
+            >
+              <IconClose />
+              <span>Limpar</span>
+            </button>
+          </>
         )}
       </div>
 
