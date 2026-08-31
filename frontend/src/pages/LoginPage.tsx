@@ -38,7 +38,7 @@ function IconDiscord() {
 }
 
 export function LoginPage() {
-  const { setSession } = useAuth();
+  const { user, token, setSession, loading: authLoading } = useAuth();
   const navigate  = useNavigate();
 
   const [step, setStep]         = useState<Step>('pin');
@@ -49,6 +49,17 @@ export function LoginPage() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   const [message, setMessage]   = useState('');
+
+  // Se já estiver logado, redireciona direto sem exibir o formulário
+  useEffect(() => {
+    if (!authLoading && user && token) {
+      if (user.role === 'ROOT') {
+        navigate('/root/equipes', { replace: true });
+      } else {
+        navigate('/tarefas', { replace: true });
+      }
+    }
+  }, [authLoading, user, token, navigate]);
 
   // Limpa mensagem de erro automaticamente após 4 segundos
   useEffect(() => {

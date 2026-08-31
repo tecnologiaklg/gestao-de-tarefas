@@ -1,10 +1,10 @@
-# 📘 MANUAL DO USUÁRIO & ALTO ESCALÃO
+# 📘 MANUAL DO USUÁRIO & COORDENAÇÃO
 ## PORTAL CORPORATIVO DE GESTÃO DE TAREFAS
 
 ```
 ================================================================================
-Documento Oficial: Manual Operacional do Colaborador e Liderança
-Versão: 2.0 (Edição Corporativa)
+Documento Oficial: Manual Operacional do Colaborador e Coordenador
+Versão: 1.0 (Edição Corporativa)
 Público-Alvo: Funcionários, Coordenadores, Gerentes e Diretores
 Sistema: Portal de Tarefas Web + Integração Discord Notifier
 Classificação: Uso Interno Confidencial
@@ -15,44 +15,45 @@ Classificação: Uso Interno Confidencial
 
 # 📑 SUMÁRIO GERAL
 
-1. [Visão Geral e Objetivos do Sistema](#1-visão-geral-e-objetivos-do-sistema)
-2. [Primeiro Acesso e Segurança](#2-primeiro-acesso-e-segurança)
-   - 2.1 [O PIN Pessoal de 6 Dígitos](#21-o-pin-pessoal-de-6-dígitos)
-   - 2.2 [Vinculação Obrigatória com o Discord (2FA)](#22-vinculação-obrigatória-com-o-discord-2fa)
-3. [Autenticação e Sessão](#3-autenticação-e-sessão)
-   - 3.1 [Fluxo de Login com Verificação em Duas Etapas](#31-fluxo-de-login-com-verificação-em-duas-etapas)
-   - 3.2 [Duração da Sessão e Renovação](#32-duração-da-sessão-e-renovação)
-4. [Estrutura da Interface e Navegação](#4-estrutura-da-interface-e-navegação)
-   - 4.1 [Barra Lateral (Menu de Navegação)](#41-barra-lateral-menu-de-navegação)
-   - 4.2 [Painel Superior de Indicadores (KPIs)](#42-painel-superior-de-indicadores-kpis)
-   - 4.3 [Barra de Busca e Filtros Inteligentes](#43-barra-de-busca-e-filtros-inteligentes)
-5. [Quadro Operacional Kanban](#5-quadro-operacional-kanban)
-   - 5.1 [Colunas e Ciclo de Vida da Tarefa](#51-colunas-e-ciclo-de-vida-da-tarefa)
-   - 5.2 [Regras Rígidas de Movimentação](#52-regras-rígidas-de-movimentação)
-   - 5.3 [Pausando Tarefas (Justificativa Obrigatória de "Aguardando")](#53-pausando-tarefas-justificativa-obrigatória-de-aguardando)
-   - 5.4 [Conclusão Irreversível de Tarefas](#54-conclusão-irreversível-de-tarefas)
-6. [Criação e Gestão de Tarefas](#6-criação-e-gestão-de-tarefas)
-   - 6.1 [Criando uma Tarefa "Para Mim" (Pessoal)](#61-criando-uma-tarefa-para-mim-pessoal)
-   - 6.2 [Criando uma Tarefa "Para Outra Pessoa" (Delegação)](#62-criando-uma-tarefa-para-outra-pessoa-delegação)
-   - 6.3 [Seletores Modernos de Calendário e Horário](#63-seletores-modernos-de-calendário-e-horário)
-   - 6.4 [Matriz Corporativa de Prioridades](#64-matriz-corporativa-de-prioridades)
-7. [Painel de Detalhes, Auditoria e Comunicação](#7-painel-de-detalhes-auditoria-e-comunicação)
-   - 7.1 [Aba "Detalhes" e Metadados](#71-aba-detalhes-e-metadados)
-   - 7.2 [Aba "Histórico" (Auditoria Imutável)](#72-aba-histórico-auditoria-imutável)
-   - 7.3 [Aba "Comentários" e Alertas aos Envolvidos](#73-aba-comentários-e-alertas-aos-envolvidos)
-8. [Módulo Especial: O "Alto Escalão" (Coordenadores, Gerentes e Diretores)](#8-módulo-especial-o-alto-escalão-coordenadores-gerentes-e-diretores)
-   - 8.1 [Visão Geral de Liderança](#81-visão-geral-de-liderança)
-   - 8.2 [Tela "Minha Equipe" (Visão Departamental)](#82-tela-minha-equipe-visão-departamental)
-   - 8.3 [Monitoramento de Gargalos e SLA](#83-monitoramento-de-gargalos-e-sla)
-   - 8.4 [Intervenção e Alinhamento em Tarefas da Equipe](#84-intervenção-e-alinhamento-em-tarefas-da-equipe)
-9. [Central de Notificações Discord e Rotinas](#9-central-de-notificações-discord-e-rotinas)
-   - 9.1 [Eventos Notificados em Tempo Real](#91-eventos-notificados-em-tempo-real)
-   - 9.2 [Resumo Diário Matinal (08:00)](#92-resumo-diário-matinal-0800)
-10. [Regras de Negócio e Políticas Inegociáveis](#10-regras-de-negócio-e-políticas-inegociáveis)
-11. [Perguntas Frequentes & Resolução de Problemas (FAQ)](#11-perguntas-frequentes--resolução-de-problemas-faq)
+1. [1. Visão Geral e Objetivos do Sistema](#secao-1)
+2. [2. Primeiro Acesso e Segurança](#secao-2)
+   - 2.1 [O PIN Pessoal de 6 Dígitos](#secao-2-1)
+   - 2.2 [Vinculação Obrigatória com o Discord (2FA)](#secao-2-2)
+3. [3. Autenticação e Sessão](#secao-3)
+   - 3.1 [Fluxo de Login com Verificação em Duas Etapas](#secao-3-1)
+   - 3.2 [Sessão Persistente e Segurança (Quando o Código é Solicitado)](#secao-3-2)
+4. [4. Estrutura da Interface e Navegação](#secao-4)
+   - 4.1 [Barra Lateral (Menu de Navegação)](#secao-4-1)
+   - 4.2 [Painel Superior de Indicadores (KPIs)](#secao-4-2)
+   - 4.3 [Barra de Busca e Filtros Inteligentes](#secao-4-3)
+5. [5. Quadro Operacional Kanban](#secao-5)
+   - 5.1 [Colunas e Ciclo de Vida da Tarefa](#secao-5-1)
+   - 5.2 [Regras Rígidas de Movimentação](#secao-5-2)
+   - 5.3 [Pausando Tarefas (Justificativa Obrigatória de "Aguardando")](#secao-5-3)
+   - 5.4 [Conclusão Irreversível de Tarefas](#secao-5-4)
+6. [6. Criação e Gestão de Tarefas](#secao-6)
+   - 6.1 [Criando uma Tarefa "Para Mim" (Pessoal)](#secao-6-1)
+   - 6.2 [Criando uma Tarefa "Para Outra Pessoa" (Delegação)](#secao-6-2)
+   - 6.3 [Seletores Modernos de Calendário e Horário](#secao-6-3)
+   - 6.4 [Matriz Corporativa de Prioridades](#secao-6-4)
+7. [7. Painel de Detalhes, Auditoria e Comunicação](#secao-7)
+   - 7.1 [Aba "Detalhes" e Metadados](#secao-7-1)
+   - 7.2 [Aba "Histórico" (Auditoria Imutável)](#secao-7-2)
+   - 7.3 [Aba "Comentários" e Alertas aos Envolvidos](#secao-7-3)
+8. [8. Módulo Especial: Coordenadores (Minha Equipe)](#secao-8)
+   - 8.1 [Visão Geral de Coordenação](#secao-8-1)
+   - 8.2 [Tela "Minha Equipe" (Visão Departamental)](#secao-8-2)
+   - 8.3 [Monitoramento de Gargalos e SLA](#secao-8-3)
+   - 8.4 [Intervenção e Alinhamento em Tarefas da Equipe](#secao-8-4)
+9. [9. Central de Notificações Discord e Rotinas](#secao-9)
+   - 9.1 [Eventos Notificados em Tempo Real](#secao-9-1)
+   - 9.2 [Resumo Diário Matinal (08:00)](#secao-9-2)
+10. [10. Regras de Negócio e Políticas Inegociáveis](#secao-10)
+11. [11. Perguntas Frequentes & Resolução de Problemas (FAQ)](#secao-11)
 
 ---
 
+<a id="secao-1"></a>
 # 1. Visão Geral e Objetivos do Sistema
 
 O **Portal de Gestão de Tarefas** é a plataforma corporativa oficial para registro, execução, delegação e acompanhamento de atividades no ambiente de trabalho.
@@ -65,14 +66,17 @@ O **Portal de Gestão de Tarefas** é a plataforma corporativa oficial para regi
 
 ---
 
+<a id="secao-2"></a>
 # 2. Primeiro Acesso e Segurança
 
+<a id="secao-2-1"></a>
 ## 2.1 O PIN Pessoal de 6 Dígitos
 Cada colaborador recebe da equipe de TI/Root um **PIN exclusivo de 6 dígitos numéricos** (ex: `482910`).
 - O PIN é sua credencial pessoal de identificação.
 - **Nunca compartilhe seu PIN com colegas.**
 - Seu PIN não é exibido em telas públicas, tarefas ou relatórios.
 
+<a id="secao-2-2"></a>
 ## 2.2 Vinculação Obrigatória com o Discord (2FA)
 Antes de conseguir entrar no portal web pela primeira vez, você deve vincular sua conta do Discord ao bot corporativo.
 
@@ -90,8 +94,10 @@ Antes de conseguir entrar no portal web pela primeira vez, você deve vincular s
 
 ---
 
+<a id="secao-3"></a>
 # 3. Autenticação e Sessão
 
+<a id="secao-3-1"></a>
 ## 3.1 Fluxo de Login com Verificação em Duas Etapas
 Para garantir máxima segurança, o sistema utiliza autenticação em dois fatores:
 
@@ -105,7 +111,7 @@ Para garantir máxima segurança, o sistema utiliza autenticação em dois fator
 [ Usuário copia código do Discord (ex: 'K9X2B4') e digita no Portal ]
                    │
                    ▼
-[ Acesso Liberado ao Painel Principal ]
+[ Acesso Liberado ao Painel Principal com Sessão Gravada no Navegador ]
 ```
 
 1. Acesse o endereço do Portal de Tarefas no seu navegador.
@@ -116,21 +122,32 @@ Para garantir máxima segurança, o sistema utiliza autenticação em dois fator
 
 > ⏱️ **Validade do código**: O código de verificação expira em **5 minutos**. Caso expire, basta reiniciar o login para receber um novo.
 
-## 3.2 Duração da Sessão e Renovação
-- A sessão autenticada permanece ativa por **8 horas consecutivas**.
-- Ao final desse período, o sistema solicitará uma nova autenticação rápida para proteger os dados da estação de trabalho.
+<a id="secao-3-2"></a>
+## 3.2 Sessão Persistente e Segurança (Quando o Código é Solicitado)
+Uma vez autenticado, **sua sessão permanece conectada no navegador**. Você **NÃO** precisa digitar seu PIN nem pedir código de verificação no Discord a cada acesso ou no dia a dia.
+
+O sistema só solicitará o PIN e o código 2FA do Discord novamente nos seguintes momentos específicos:
+1. **Novo Dispositivo / Notebook**: Ao acessar o sistema por um computador ou aparelho diferente pela primeira vez.
+2. **Navegador Diferente**: Ao alternar de navegador (por exemplo, se você costuma usar o Google Chrome e abrir no Microsoft Edge).
+3. **Limpeza de Cache / Cookies / Dados**: Se o histórico, cookies ou dados de navegação do browser forem apagados.
+4. **Logoff Manual**: Ao clicar expressamente no botão **"Sair"** no menu do portal.
+
+> 💡 **No cotidiano de trabalho**: Basta abrir o endereço do portal no seu navegador habitual e você já estará logado e pronto para operar suas tarefas!
 
 ---
 
+<a id="secao-4"></a>
 # 4. Estrutura da Interface e Navegação
 
+<a id="secao-4-1"></a>
 ## 4.1 Barra Lateral (Menu de Navegação)
 Localizada à esquerda da tela, oferece acesso rápido aos módulos disponíveis de acordo com seu perfil:
-- 📌 **Minhas Tarefas**: Visualização padrão de atividades sob sua responsabilidade.
-- 👥 **Minha Equipe**: Disponível para **Coordenadores, Gerentes e Diretores**, exibindo o painel consolidado do departamento.
+- 📌 **Tarefas**: Visualização padrão de atividades sob sua responsabilidade (*Minhas Tarefas* e *Criadas por Mim*).
+- 👥 **Minha Equipe**: Disponível exclusivamente para **Coordenadores**, exibindo o painel consolidado do departamento.
 - 🌓 **Alternador de Tema**: Alternância entre Modo Claro (Warm Stone) e Modo Escuro.
 - 🚪 **Sair**: Encerra sua sessão com segurança.
 
+<a id="secao-4-2"></a>
 ## 4.2 Painel Superior de Indicadores (KPIs)
 Cards informativos no topo da tela refletem sua carga de trabalho em tempo real:
 - 📋 **Total**: Quantidade geral de tarefas sob seu escopo.
@@ -139,6 +156,7 @@ Cards informativos no topo da tela refletem sua carga de trabalho em tempo real:
 - 🚨 **Atrasadas**: Tarefas cujo prazo limite foi ultrapassado e exigem atenção prioritária.
 - ✅ **Concluídas (7d)**: Volume de entregas finalizadas nos últimos 7 dias.
 
+<a id="secao-4-3"></a>
 ## 4.3 Barra de Busca e Filtros Inteligentes
 Localizada logo abaixo das abas de perspectiva:
 - 🔍 **Busca por Texto**: Filtra cards em tempo real pelo título da tarefa.
@@ -148,6 +166,7 @@ Localizada logo abaixo das abas de perspectiva:
 
 ---
 
+<a id="secao-5"></a>
 # 5. Quadro Operacional Kanban
 
 O trabalho é gerenciado visualmente através de um quadro Kanban organizado em 4 colunas sequenciais:
@@ -156,15 +175,18 @@ O trabalho é gerenciado visualmente através de um quadro Kanban organizado em 
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │  PENDENTE    │───>│ EM ANDAMENTO │<──>│  AGUARDANDO  │───>│  CONCLUÍDA   │
 │  (A iniciar) │    │  (Em ação)   │    │  (Pausada)   │    │  (Finalizada)│
+│              │    │              │    │              │    │(Irreversível)│
 └──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
 ```
 
+<a id="secao-5-1"></a>
 ## 5.1 Colunas e Ciclo de Vida da Tarefa
 1. **Pendente (📭)**: Tarefa atribuída e registrada no sistema, aguardando início dos trabalhos.
 2. **Em Andamento (⚡)**: Colaborador iniciou ativamente a execução da demanda.
 3. **Aguardando (⏸️)**: Trabalho pausado temporariamente devido a bloqueios externos (ex: retorno de cliente, aprovação de diretoria, peças).
 4. **Concluída (✅)**: Atividade totalmente finalizada e entregue.
 
+<a id="secao-5-2"></a>
 ## 5.2 Regras Rígidas de Movimentação
 O sistema valida a conformidade de cada transição via *Drag & Drop*:
 
@@ -178,11 +200,13 @@ O sistema valida a conformidade de cada transição via *Drag & Drop*:
 | **Aguardando** | **Concluída** | ✅ Sim | Finalização direta |
 | **Concluída** | *Qualquer coluna* | ❌ Não | **Irreversível.** Não pode ser reaberta |
 
+<a id="secao-5-3"></a>
 ## 5.3 Pausando Tarefas (Justificativa Obrigatória de "Aguardando")
 Ao arrastar qualquer card para a coluna **Aguardando**, o sistema abre imediatamente uma janela modal obrigatória:
 - Você deve descrever claramente o motivo do bloqueio (ex: *"Aguardando aprovação do orçamento pelo financeiro"*).
 - A justificativa é gravada no **Histórico de Auditoria** da tarefa e informada por notificação ao criador da demanda.
 
+<a id="secao-5-4"></a>
 ## 5.4 Conclusão Irreversível de Tarefas
 Quando uma tarefa é movida para **Concluída**:
 - O card é travado permanentemente para edição de dados.
@@ -191,6 +215,7 @@ Quando uma tarefa é movida para **Concluída**:
 
 ---
 
+<a id="secao-6"></a>
 # 6. Criação e Gestão de Tarefas
 
 Para registrar uma nova atividade, clique no botão **＋ Nova Tarefa** no topo direito da tela. Uma janela interativa perguntará a finalidade:
@@ -206,17 +231,20 @@ Para registrar uma nova atividade, clique no botão **＋ Nova Tarefa** no topo 
 └──────────────────────────────────────────────────────────┘
 ```
 
+<a id="secao-6-1"></a>
 ## 6.1 Criando uma Tarefa "Para Mim" (Pessoal)
 - Selecione **Para mim**.
 - O sistema preenche seu Setor e seu Nome como Responsável automaticamente nos bastidores, mantendo o formulário enxuto.
 - Informe apenas: **Título**, **Descrição** (opcional), **Prioridade**, **Data** e **Horário de Entrega**.
 
+<a id="secao-6-2"></a>
 ## 6.2 Criando uma Tarefa "Para Outra Pessoa" (Delegação)
 - Selecione **Para outra pessoa**.
 - Escolha o **Setor de Destino** no dropdown moderno.
 - Selecione o **Responsável** daquele setor.
 - Preencha o **Título**, a **Descrição detalhada**, o nível de **Prioridade** e o **Prazo (Data e Hora)**.
 
+<a id="secao-6-3"></a>
 ## 6.3 Seletores Modernos de Calendário e Horário
 O sistema conta com seletores modernos desenvolvidos sob medida:
 - **DatePicker (Calendário)**:
@@ -227,6 +255,7 @@ O sistema conta com seletores modernos desenvolvidos sob medida:
 - **TimePicker (Horário)**:
   - Seleção precisa em colunas organizadas de **Horas** e **Minutos** (intervalos de 10/15 minutos para agilidade operacional).
 
+<a id="secao-6-4"></a>
 ## 6.4 Matriz Corporativa de Prioridades
 
 | Nível | Identificação Visual | Quando Utilizar | Exemplo Prático |
@@ -237,16 +266,19 @@ O sistema conta com seletores modernos desenvolvidos sob medida:
 
 ---
 
+<a id="secao-7"></a>
 # 7. Painel de Detalhes, Auditoria e Comunicação
 
 Ao clicar em qualquer card do Kanban, abre-se a **Sidebar Lateral Direita** contendo 3 abas principais:
 
+<a id="secao-7-1"></a>
 ## 7.1 Aba "Detalhes" e Metadados
 - Título e Descrição completa da demanda.
 - Nome do Criador e do Responsável com seus respectivos avatares e setores.
 - Prazo final e badge de status atualizado.
 - Botão de edição rápida (disponível para os envolvidos enquanto a tarefa não estiver concluída).
 
+<a id="secao-7-2"></a>
 ## 7.2 Aba "Histórico" (Auditoria Imutável)
 Uma linha do tempo cronológica com carimbo de data, hora e responsável por cada evento:
 - Data e hora exata da criação da tarefa.
@@ -254,54 +286,48 @@ Uma linha do tempo cronológica com carimbo de data, hora e responsável por cad
 - Alterações em títulos, prazos ou prioridades.
 - Nenhuma entrada do histórico pode ser editada ou deletada.
 
+<a id="secao-7-3"></a>
 ## 7.3 Aba "Comentários" e Alertas aos Envolvidos
 - Chat interno atrelado à tarefa para alinhamento rápido de dúvidas, links ou atualizações de progresso.
 - Cada novo comentário envia uma notificação no Discord diretamente para o criador e o responsável da tarefa.
 
 ---
 
-# 8. Módulo Especial: O "Alto Escalão" (Coordenadores, Gerentes e Diretores)
+<a id="secao-8"></a>
+# 8. Módulo Especial: Coordenadores (Minha Equipe)
 
-A liderança possui papel fundamental no direcionamento estratégico e acompanhamento tático da operação.
+O módulo **Minha Equipe** é um recurso exclusivo disponível para colaboradores com cargo de **Coordenador**, permitindo a gestão tática do setor.
 
-```
-┌───────────────────────────────────────────────────────────────────────┐
-│              HIERARQUIA E VISIBILIDADE DE GESTÃO                      │
-│                                                                       │
-│  [ DIRETOR / GERENTE ] ──> Visão estratégica global e setorial        │
-│          │                                                            │
-│          ▼                                                            │
-│  [ COORDENADOR ]       ──> Gestão operacional da equipe do setor      │
-│          │                                                            │
-│          ▼                                                            │
-│  [ FUNCIONÁRIOS ]      ──> Execução focada de tarefas atribuídas      │
-└───────────────────────────────────────────────────────────────────────┘
-```
+<a id="secao-8-1"></a>
+## 8.1 Visão Geral de Coordenação
+- Coordenadores possuem todas as funcionalidades dos funcionários (criação e execução de tarefas).
+- Possuem acesso exclusivo ao menu **"Minha Equipe"** na barra lateral.
 
-## 8.1 Visão Geral de Liderança
-- Coordenadores, Gerentes e Diretores possuem a mesma facilidade de criação e execução de tarefas dos funcionários.
-- Possuem acesso exclusivo ao menu **"Minha Equipe"**.
-
+<a id="secao-8-2"></a>
 ## 8.2 Tela "Minha Equipe" (Visão Departamental)
 Ao acessar **Minha Equipe**:
-- O gestor visualiza todas as tarefas pertencentes aos colaboradores do seu setor em um único painel consolidado.
+- O coordenador visualiza todas as tarefas pertencentes aos colaboradores do seu setor em um único painel consolidado.
 - Pode alternar a visualização ou filtrar por colaborador específico, prioridade ou prazo.
 - Identifica rapidamente colaboradores sobrecarregados ou com disponibilidade.
 
+<a id="secao-8-3"></a>
 ## 8.3 Monitoramento de Gargalos e SLA
 - **Identificação de Tarefas Travadas**: Monitoramento de cards na coluna *Aguardando* para desatar nós e destravar aprovações.
 - **Prevenção de Atrasos**: Acompanhamento dos cards na cor vermelha/alerta de prazo iminente para reatribuição de prioridades antes do vencimento do prazo.
 
+<a id="secao-8-4"></a>
 ## 8.4 Intervenção e Alinhamento em Tarefas da Equipe
-- Líderes podem abrir qualquer tarefa do setor, consultar o histórico de auditoria e inserir **comentários de orientação**.
-- A intervenção fica registrada com a tag do cargo do gestor, garantindo clareza e autoridade no direcionamento da demanda.
+- O coordenador pode abrir qualquer tarefa do setor, consultar o histórico de auditoria e inserir **comentários de orientação**.
+- A intervenção fica registrada com a tag do cargo de Coordenador, garantindo clareza e autoridade no direcionamento da demanda.
 
 ---
 
+<a id="secao-9"></a>
 # 9. Central de Notificações Discord e Rotinas
 
 O Bot do Portal opera 24/7 integrado ao banco de dados para garantir que nenhuma mensagem seja perdida.
 
+<a id="secao-9-1"></a>
 ## 9.1 Eventos Notificados em Tempo Real
 
 | Evento Ocorrido | Destinatário da Mensagem | Conteúdo do Alerta |
@@ -312,6 +338,7 @@ O Bot do Portal opera 24/7 integrado ao banco de dados para garantir que nenhuma
 | **Novo Comentário** | Criador e Responsável | Autor e texto do comentário |
 | **Código 2FA de Login** | Usuário solicitante | Código de 6 letras para entrada no site |
 
+<a id="secao-9-2"></a>
 ## 9.2 Resumo Diário Matinal (08:00)
 Todos os dias úteis, pontualmente às **08h00**, o bot envia uma mensagem direta personalizada para cada colaborador que possua demandas ativas:
 - Quantidade de tarefas **pendentes** para o dia.
@@ -320,6 +347,7 @@ Todos os dias úteis, pontualmente às **08h00**, o bot envia uma mensagem diret
 
 ---
 
+<a id="secao-10"></a>
 # 10. Regras de Negócio e Políticas Inegociáveis
 
 ```
@@ -340,6 +368,7 @@ Todos os dias úteis, pontualmente às **08h00**, o bot envia uma mensagem diret
 
 ---
 
+<a id="secao-11"></a>
 # 11. Perguntas Frequentes & Resolução de Problemas (FAQ)
 
 ### P1: Digitei meu PIN no site e recebi a mensagem "Vincule seu Discord". O que fazer?
