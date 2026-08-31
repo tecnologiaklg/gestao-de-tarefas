@@ -1604,55 +1604,360 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ================================================================
-   Dark Mode — Charcoal/Slate (não preto, apenas mais escuro)
+   DARK MODE — Sistema de Design Profissional
+   ─────────────────────────────────────────────────────────────────
+   Paleta de camadas (do mais fundo ao mais elevado):
+     L0 canvas  #111110  ← fundo de página
+     L1 sidebar #161614  ← sidebar / painéis laterais
+     L2 surface #1C1C1A  ← cards, inputs, dropdowns
+     L3 raised  #242421  ← hover, menus flutuantes
+     L4 overlay #2C2C29  ← modais, tooltips
+
+   Texto:
+     primário   #E2E2DC  (não branco puro — ≥ 7:1 sobre L2)
+     secundário #A8A89F  (textos de suporte — ≥ 4.5:1 sobre L2)
+     terciário  #6B6B63  (placeholders, labels desativados)
+
+   Accent (verde-jade dessaturado para dark):
+     primário   #4D9D8F  (hsl 173 34% 46%) — mais brilhante que no light
+     dark       #3D8275
+     light bg   rgba(77,157,143,0.12)
+
+   WCAG AA: texto primário sobre L2 → contraste ~8.2:1 ✓
 ================================================================ */
 [data-theme="dark"] {
-  --bg-canvas:  #1C1C1A;
-  --bg-surface: #242420;
-  --bg-raised:  #2C2C28;
 
-  --stone-50:  #2C2C28;
-  --stone-100: #343430;
-  --stone-150: #3C3C38;
-  --stone-200: #464640;
-  --stone-300: #5A5A54;
-  --stone-400: #808078;
-  --stone-500: #A0A098;
-  --stone-600: #C0C0B8;
-  --stone-700: #D8D8D0;
-  --stone-800: #E8E8E0;
-  --stone-900: #F4F4EC;
+  /* ── Backgrounds (camadas de profundidade) ──────────────────── */
+  --bg-canvas:  #111110;
+  --bg-surface: #1C1C1A;
+  --bg-raised:  #242421;
 
-  --color-primary-light: rgba(61, 122, 110, 0.15);
-  --color-primary-soft:  rgba(61, 122, 110, 0.25);
+  /* ── Neutros warm-dark (escala remapeada) ───────────────────── */
+  --stone-50:  #1C1C1A;   /* = bg-surface (uso interno) */
+  --stone-100: #222220;
+  --stone-150: #2A2A27;
+  --stone-200: #333330;
+  --stone-300: #4A4A46;
+  --stone-400: #6B6B63;
+  --stone-500: #8C8C83;
+  --stone-600: #A8A89F;
+  --stone-700: #C4C4BB;
+  --stone-800: #E2E2DC;   /* texto principal */
+  --stone-900: #F0F0EA;   /* texto em destaque */
 
-  --color-success-bg:  rgba(45, 106, 79, 0.18);
-  --color-warning-bg:  rgba(146, 64, 14, 0.18);
-  --color-danger-bg:   rgba(155, 28, 28, 0.18);
-  --color-info-bg:     rgba(30, 78, 140, 0.18);
+  /* ── Accent — verde-jade calibrado para escuro ──────────────── */
+  --color-primary:       #4D9D8F;
+  --color-primary-dark:  #3D8275;
+  --color-primary-light: rgba(77, 157, 143, 0.12);
+  --color-primary-soft:  rgba(77, 157, 143, 0.20);
+  --color-primary-mid:   #6DB5AA;
 
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.30), 0 1px 2px -1px rgba(0, 0, 0, 0.20);
-  --shadow-md: 0 3px 8px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.20);
-  --shadow-lg: 0 8px 20px -4px rgba(0, 0, 0, 0.40), 0 4px 8px -4px rgba(0, 0, 0, 0.20);
+  /* ── Status — dessaturados, legíveis, sem ofuscamento ───────── */
+  --color-success:        #5BAD80;
+  --color-success-bg:     rgba(45, 106, 79, 0.15);
+  --color-success-border: rgba(91, 173, 128, 0.30);
+
+  --color-warning:        #D4914A;
+  --color-warning-bg:     rgba(180, 100, 30, 0.15);
+  --color-warning-border: rgba(212, 145, 74, 0.30);
+
+  --color-danger:         #D96B6B;
+  --color-danger-bg:      rgba(180, 50, 50, 0.15);
+  --color-danger-border:  rgba(217, 107, 107, 0.30);
+
+  --color-info:           #6B9FD4;
+  --color-info-bg:        rgba(50, 100, 180, 0.15);
+  --color-info-border:    rgba(107, 159, 212, 0.30);
+
+  /* ── Prioridade — visíveis no escuro ────────────────────────── */
+  --color-baixa:    #5BAD80;
+  --color-normal:   #6B9FD4;
+  --color-urgente:  #D96B6B;
+
+  /* ── Status Kanban ──────────────────────────────────────────── */
+  --color-pendente:   #8C8C83;
+  --color-andamento:  #6B9FD4;
+  --color-aguardando: #D4914A;
+  --color-concluida:  #5BAD80;
+
+  /* ── Sombras — mais pronunciadas (fundo escuro exige mais depth) */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 4px 0 rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.45), 0 2px 6px -2px rgba(0, 0, 0, 0.30);
+  --shadow-lg: 0 10px 28px -4px rgba(0, 0, 0, 0.55), 0 6px 12px -4px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 20px 48px -8px rgba(0, 0, 0, 0.65), 0 8px 18px -6px rgba(0, 0, 0, 0.40);
 }
 
-/* ── Dark Mode: TaskCard específico ── */
-[data-theme="dark"] .task-card {
+/* ── Body base ──────────────────────────────────────────────── */
+[data-theme="dark"] body {
+  color: var(--stone-800);
+  background: var(--bg-canvas);
+}
+
+/* ── App shell / canvas ─────────────────────────────────────── */
+[data-theme="dark"] .app-shell,
+[data-theme="dark"] .app-content,
+[data-theme="dark"] .app-main {
+  background: var(--bg-canvas);
+}
+
+/* ── Sidebar de navegação ───────────────────────────────────── */
+[data-theme="dark"] .app-sidebar {
+  background: #161614;
+  border-right-color: var(--stone-200);
+}
+
+[data-theme="dark"] .sidebar-logo {
+  border-bottom-color: var(--stone-200);
+}
+
+[data-theme="dark"] .sidebar-logo-text { color: var(--stone-800); }
+[data-theme="dark"] .sidebar-logo-sub  { color: var(--stone-500); }
+
+[data-theme="dark"] .sidebar-section-label { color: var(--stone-400); }
+
+[data-theme="dark"] .sidebar-item {
+  color: var(--stone-600);
+}
+[data-theme="dark"] .sidebar-item:hover {
+  background: var(--stone-100);
+  color: var(--stone-800);
+}
+[data-theme="dark"] .sidebar-item.active {
+  background: rgba(77, 157, 143, 0.10);
+  color: var(--stone-900);
+}
+[data-theme="dark"] .sidebar-item.active::before {
+  background: var(--color-primary);
+}
+[data-theme="dark"] .sidebar-item .icon    { color: var(--stone-500); }
+[data-theme="dark"] .sidebar-item.active .icon { color: var(--color-primary); }
+
+[data-theme="dark"] .sidebar-footer       { border-top-color: var(--stone-200); }
+[data-theme="dark"] .user-name            { color: var(--stone-800); }
+[data-theme="dark"] .user-cargo           { color: var(--stone-500); }
+[data-theme="dark"] .user-avatar          { background: var(--stone-300); color: var(--stone-900); }
+
+[data-theme="dark"] .sidebar-theme-btn  { color: var(--stone-500); }
+[data-theme="dark"] .sidebar-theme-btn:hover { background: var(--stone-100); color: var(--stone-700); }
+[data-theme="dark"] .sidebar-logout-btn { color: var(--stone-500); }
+[data-theme="dark"] .sidebar-logout-btn:hover {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* ── Page header & títulos ──────────────────────────────────── */
+[data-theme="dark"] .page-header  { border-bottom-color: var(--stone-200); }
+[data-theme="dark"] .page-title   { color: var(--stone-900); }
+[data-theme="dark"] .page-subtitle { color: var(--stone-500); }
+
+/* ── KPI Cards ──────────────────────────────────────────────── */
+[data-theme="dark"] .kpi-card {
   background: var(--bg-surface);
   border-color: var(--stone-200);
 }
+[data-theme="dark"] .kpi-label { color: var(--stone-500); }
+[data-theme="dark"] .kpi-value { color: var(--stone-900); }
 
+/* ── Filter bar ─────────────────────────────────────────────── */
+[data-theme="dark"] .filter-bar {
+  background: var(--bg-surface);
+  border-color: var(--stone-200);
+}
+[data-theme="dark"] .filter-input,
+[data-theme="dark"] .filter-select {
+  background: var(--bg-raised);
+  border-color: var(--stone-200);
+  color: var(--stone-800);
+}
+[data-theme="dark"] .filter-input:focus,
+[data-theme="dark"] .filter-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(77, 157, 143, 0.18);
+}
+[data-theme="dark"] .filter-input::placeholder { color: var(--stone-400); }
+[data-theme="dark"] .filter-divider { background: var(--stone-200); }
+[data-theme="dark"] .search-icon    { color: var(--stone-400); }
+
+/* ── Kanban columns ─────────────────────────────────────────── */
+[data-theme="dark"] .kanban-column {
+  background: #161614;
+  border-color: var(--stone-200);
+}
+[data-theme="dark"] .kanban-column-header { border-bottom-color: var(--stone-200); }
+[data-theme="dark"] .kanban-column-title  { color: var(--stone-700); }
+[data-theme="dark"] .kanban-column-count  {
+  background: var(--stone-200);
+  color: var(--stone-600);
+}
+
+/* ── Task Cards ─────────────────────────────────────────────── */
+[data-theme="dark"] .task-card {
+  background: var(--bg-surface);
+  border-color: var(--stone-200);
+  box-shadow: var(--shadow-sm);
+}
 [data-theme="dark"] .task-card:hover {
   background: var(--bg-raised);
   border-color: var(--stone-300);
+  box-shadow: var(--shadow-md);
 }
+[data-theme="dark"] .task-card-title  { color: var(--stone-800); }
+[data-theme="dark"] .task-card-meta   { color: var(--stone-500); }
+[data-theme="dark"] .task-card-footer { border-top-color: var(--stone-200); }
 
-/* ── Dark Mode: Sidebar ── */
+/* ── Task Sidebar (detalhes) ────────────────────────────────── */
 [data-theme="dark"] .task-sidebar {
-  background: var(--bg-surface);
+  background: #161614;
   border-left-color: var(--stone-200);
 }
+[data-theme="dark"] .sidebar-panel-header { border-bottom-color: var(--stone-200); }
+[data-theme="dark"] .sidebar-panel-title  { color: var(--stone-900); }
+[data-theme="dark"] .sidebar-panel-close  { color: var(--stone-500); }
+[data-theme="dark"] .sidebar-panel-close:hover { background: var(--stone-200); color: var(--stone-800); }
+
+[data-theme="dark"] .detail-row        { border-bottom-color: var(--stone-200); }
+[data-theme="dark"] .detail-label      { color: var(--stone-500); }
+[data-theme="dark"] .detail-value      { color: var(--stone-800); }
+
+[data-theme="dark"] .sidebar-tab { color: var(--stone-500); border-bottom-color: transparent; }
+[data-theme="dark"] .sidebar-tab:hover   { color: var(--stone-700); }
+[data-theme="dark"] .sidebar-tab.active  { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+[data-theme="dark"] .sidebar-tabs-bar    { border-bottom-color: var(--stone-200); }
+
+/* ── Comentários ────────────────────────────────────────────── */
+[data-theme="dark"] .comment-bubble {
+  background: var(--bg-raised);
+  border-color: var(--stone-200);
+}
+[data-theme="dark"] .comment-author { color: var(--stone-700); }
+[data-theme="dark"] .comment-date   { color: var(--stone-400); }
+[data-theme="dark"] .comment-text   { color: var(--stone-700); }
+
+[data-theme="dark"] .comment-input {
+  background: var(--bg-raised);
+  border-color: var(--stone-200);
+  color: var(--stone-800);
+}
+[data-theme="dark"] .comment-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(77, 157, 143, 0.18);
+}
+
+/* ── Modals ─────────────────────────────────────────────────── */
+[data-theme="dark"] .modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--stone-200);
+  box-shadow: var(--shadow-xl);
+}
+[data-theme="dark"] .modal-header {
+  border-bottom-color: var(--stone-200);
+  background: #161614;
+}
+[data-theme="dark"] .modal-title  { color: var(--stone-900); }
+[data-theme="dark"] .modal-body   { color: var(--stone-700); }
+[data-theme="dark"] .modal-footer {
+  border-top-color: var(--stone-200);
+  background: #161614;
+}
+
+/* ── Tabelas ────────────────────────────────────────────────── */
+[data-theme="dark"] .data-table-wrapper {
+  border-color: var(--stone-200);
+  background: var(--bg-surface);
+}
+[data-theme="dark"] .data-table th {
+  background: #161614;
+  color: var(--stone-500);
+  border-bottom-color: var(--stone-200);
+}
+[data-theme="dark"] .data-table td {
+  border-bottom-color: var(--stone-150);
+  color: var(--stone-700);
+}
+[data-theme="dark"] .data-table tr:hover td { background: var(--bg-raised); }
+
+/* ── Botões ─────────────────────────────────────────────────── */
+[data-theme="dark"] .btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+[data-theme="dark"] .btn-primary:hover { background: var(--color-primary-dark); }
+
+[data-theme="dark"] .btn-secondary {
+  background: var(--bg-raised);
+  border-color: var(--stone-300);
+  color: var(--stone-700);
+}
+[data-theme="dark"] .btn-secondary:hover {
+  background: var(--stone-200);
+  border-color: var(--stone-400);
+}
+
+[data-theme="dark"] .btn-ghost { color: var(--stone-600); }
+[data-theme="dark"] .btn-ghost:hover { background: var(--stone-150); color: var(--stone-800); }
+
+/* ── Badges ─────────────────────────────────────────────────── */
+[data-theme="dark"] .badge-pendente   { background: rgba(140,140,131,0.15); color: #A0A096; border-color: rgba(140,140,131,0.25); }
+[data-theme="dark"] .badge-andamento  { background: rgba(107,159,212,0.15); color: #6B9FD4; border-color: rgba(107,159,212,0.30); }
+[data-theme="dark"] .badge-aguardando { background: rgba(212,145,74,0.15);  color: #D4914A; border-color: rgba(212,145,74,0.30); }
+[data-theme="dark"] .badge-concluida  { background: rgba(91,173,128,0.15);  color: #5BAD80; border-color: rgba(91,173,128,0.30); }
+
+[data-theme="dark"] .badge-baixa   { background: rgba(91,173,128,0.15);  color: #5BAD80; border-color: rgba(91,173,128,0.30); }
+[data-theme="dark"] .badge-normal  { background: rgba(107,159,212,0.15); color: #6B9FD4; border-color: rgba(107,159,212,0.30); }
+[data-theme="dark"] .badge-urgente { background: rgba(217,107,107,0.15); color: #D96B6B; border-color: rgba(217,107,107,0.30); }
+
+[data-theme="dark"] .badge-log-login        { background: rgba(77,157,143,0.15); color: #4D9D8F; }
+[data-theme="dark"] .badge-log-login-root   { background: rgba(212,145,74,0.15); color: #D4914A; }
+[data-theme="dark"] .badge-log-criacao      { background: rgba(91,173,128,0.15); color: #5BAD80; }
+[data-theme="dark"] .badge-log-edicao       { background: rgba(107,159,212,0.15); color: #6B9FD4; }
+[data-theme="dark"] .badge-log-status       { background: rgba(212,145,74,0.15); color: #D4914A; }
+[data-theme="dark"] .badge-log-comentario   { background: rgba(180,130,230,0.15); color: #B48BE0; }
+[data-theme="dark"] .badge-log-usuario      { background: rgba(140,140,131,0.15); color: #A0A096; }
+[data-theme="dark"] .badge-log-discord      { background: rgba(88,101,242,0.18);  color: #7B8CE8; }
+[data-theme="dark"] .badge-log-default      { background: var(--stone-150); color: var(--stone-600); }
+
+/* ── Inputs / Textareas genéricos ───────────────────────────── */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: var(--bg-raised);
+  color: var(--stone-800);
+  border-color: var(--stone-200);
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(77, 157, 143, 0.18);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder { color: var(--stone-400); }
+
+/* ── Paginação ──────────────────────────────────────────────── */
+[data-theme="dark"] .pagination-bar    { border-top-color: var(--stone-200); }
+[data-theme="dark"] .pagination-info   { color: var(--stone-500); }
+[data-theme="dark"] .pagination-btn    { background: var(--bg-raised); border-color: var(--stone-200); color: var(--stone-600); }
+[data-theme="dark"] .pagination-btn:hover:not(:disabled) { background: var(--stone-200); color: var(--stone-800); }
+[data-theme="dark"] .pagination-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+[data-theme="dark"] .pagination-btn:disabled { opacity: 0.35; }
+
+/* ── Perspectiva tabs ───────────────────────────────────────── */
+[data-theme="dark"] .perspectiva-tabs { background: var(--stone-100); }
+[data-theme="dark"] .perspectiva-tab  { color: var(--stone-500); }
+[data-theme="dark"] .perspectiva-tab:hover { background: var(--stone-150); color: var(--stone-700); }
+[data-theme="dark"] .perspectiva-tab.active {
+  background: var(--bg-surface);
+  color: var(--stone-900);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────── */
+[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg-canvas); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--stone-300); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: var(--stone-400); }
+
 
 /* ================================================================
    Perspectiva de Tarefas
