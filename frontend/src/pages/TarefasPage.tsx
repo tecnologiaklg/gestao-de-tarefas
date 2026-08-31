@@ -10,13 +10,12 @@ import { useKpis } from '../hooks/useKpis';
 import { useAuth } from '../contexts/AuthContext';
 import { Tarefa } from '../types';
 
-type Perspectiva = 'todas' | 'para_mim' | 'eu_para_mim' | 'eu_para_outros';
+type Perspectiva = 'todas' | 'para_mim' | 'criadas_por_mim';
 
 const PERSPECTIVAS: { value: Perspectiva; label: string }[] = [
-  { value: 'todas',         label: 'Todas' },
-  { value: 'para_mim',      label: 'Para mim' },
-  { value: 'eu_para_mim',   label: 'Criadas para mim mesmo' },
-  { value: 'eu_para_outros',label: 'Criadas para outros' },
+  { value: 'todas',          label: 'Todas' },
+  { value: 'para_mim',       label: 'Para mim' },
+  { value: 'criadas_por_mim',label: 'Criadas por mim' },
 ];
 
 const PRIORIDADES = ['', 'BAIXA', 'NORMAL', 'URGENTE'] as const;
@@ -46,12 +45,13 @@ export function TarefasPage() {
   const { tarefas, setTarefas, loading, refetch } = useTarefas('todas', params);
   const { kpis, loading: kpiLoading }             = useKpis('usuario');
 
-  // Filtra por perspectiva no client (dados já vêm do backend)
+  // Filtra por perspectiva no client
   const tarefasFiltradas = tarefas.filter(t => {
     const uid = user?.id;
-    if (perspectiva === 'para_mim')       return t.responsavel_id === uid && t.criador_id !== uid;
-    if (perspectiva === 'eu_para_mim')    return t.criador_id === uid && t.responsavel_id === uid;
-    if (perspectiva === 'eu_para_outros') return t.criador_id === uid && t.responsavel_id !== uid;
+    // Para mim → outros criaram pra mim (eu sou responsável mas não criador)
+    if (perspectiva === 'para_mim')        return t.responsavel_id === uid && t.criador_id !== uid;
+    // Criadas por mim → eu criei (pra mim mesmo OU pra outros — juntos)
+    if (perspectiva === 'criadas_por_mim') return t.criador_id === uid;
     return true; // 'todas'
   });
 
@@ -63,8 +63,8 @@ export function TarefasPage() {
     return 'para_mim';
   };
 
-  // Responsável pode mover: apenas tarefas onde é responsável
-  const isResponsavel = perspectiva !== 'eu_para_outros';
+  // Pode mover status apenas quando é o responsável pela tarefa
+  const isResponsavel = perspectiva !== 'criadas_por_mim';
   const hasFilters = search || prioridade || prazo;
 
   return (
