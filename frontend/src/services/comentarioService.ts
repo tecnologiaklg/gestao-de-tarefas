@@ -9,7 +9,6 @@ export const comentarioService = {
 export const historicoService = {
   listar: async (tarefaId: number) => {
     const { data } = await api.get<HistoricoEntry[]>(`/tarefas/${tarefaId}`);
-    // histórico vem em endpoint separado no futuro; por ora buscamos da tarefa
     return data as unknown as HistoricoEntry[];
   },
 };
