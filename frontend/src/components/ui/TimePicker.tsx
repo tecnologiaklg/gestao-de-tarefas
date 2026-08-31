@@ -22,6 +22,7 @@ const MINUTES = ['00', '10', '15', '20', '30', '40', '45', '50'];
 
 export function TimePicker({ id, value, onChange, disabled }: Props) {
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<{ up: boolean; right: boolean }>({ up: false, right: false });
   const [inputH, inputM] = value && value.includes(':') ? value.split(':') : ['18', '00'];
   const ref = useRef<HTMLDivElement>(null);
   const hourRef = useRef<HTMLDivElement>(null);
@@ -33,6 +34,18 @@ export function TimePicker({ id, value, onChange, disabled }: Props) {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  // Detecta dinamicamente a melhor posição para não ser cortado
+  useEffect(() => {
+    if (open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceRight = window.innerWidth - rect.left;
+      const up = spaceBelow < 250 && rect.top > 250;
+      const right = spaceRight < 230;
+      setPlacement({ up, right });
+    }
+  }, [open]);
 
   useEffect(() => {
     if (open && hourRef.current) {
@@ -65,7 +78,10 @@ export function TimePicker({ id, value, onChange, disabled }: Props) {
       </button>
 
       {open && (
-        <div className="timepicker-dropdown" onClick={e => e.stopPropagation()}>
+        <div
+          className={`timepicker-dropdown${placement.up ? ' open-up' : ' open-down'}${placement.right ? ' align-right' : ' align-left'}`}
+          onClick={e => e.stopPropagation()}
+        >
           <div className="timepicker-header">
             <IconClock />
             <span className="timepicker-header-label">Horário de Entrega</span>

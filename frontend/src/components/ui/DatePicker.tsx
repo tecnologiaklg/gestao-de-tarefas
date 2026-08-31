@@ -62,6 +62,7 @@ function getFirstWeekday(year: number, month: number) {
 
 export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', disabled }: Props) {
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<{ up: boolean; right: boolean }>({ up: false, right: false });
   const ref = useRef<HTMLDivElement>(null);
 
   const today = new Date();
@@ -89,6 +90,18 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  // Detecta dinamicamente a melhor posição para não ser cortado
+  useEffect(() => {
+    if (open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceRight = window.innerWidth - rect.left;
+      const up = spaceBelow < 310 && rect.top > 310;
+      const right = spaceRight < 290;
+      setPlacement({ up, right });
+    }
+  }, [open]);
 
   function prevMonth(e: React.MouseEvent) {
     e.stopPropagation();
@@ -171,7 +184,10 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
       </button>
 
       {open && (
-        <div className="datepicker-dropdown" onClick={e => e.stopPropagation()}>
+        <div
+          className={`datepicker-dropdown${placement.up ? ' open-up' : ' open-down'}${placement.right ? ' align-right' : ' align-left'}`}
+          onClick={e => e.stopPropagation()}
+        >
           {/* Top header navigation */}
           <div className="datepicker-header">
             <button type="button" className="datepicker-nav-btn" onClick={prevMonth} title="Mês anterior">

@@ -38,6 +38,7 @@ function IconCheck() {
 
 export function CustomSelect({ id, value, onChange, options, placeholder = 'Selecione…', disabled, className }: Props) {
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<{ up: boolean; right: boolean }>({ up: false, right: false });
   const ref = useRef<HTMLDivElement>(null);
   const selected = options.find(o => o.value === value);
 
@@ -50,6 +51,17 @@ export function CustomSelect({ id, value, onChange, options, placeholder = 'Sele
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  useEffect(() => {
+    if (open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceRight = window.innerWidth - rect.left;
+      const up = spaceBelow < 240 && rect.top > 240;
+      const right = spaceRight < 200;
+      setPlacement({ up, right });
+    }
+  }, [open]);
 
   return (
     <div
@@ -72,7 +84,11 @@ export function CustomSelect({ id, value, onChange, options, placeholder = 'Sele
       </button>
 
       {open && (
-        <div className="custom-select-dropdown" role="listbox">
+        <div
+          className={`custom-select-dropdown${placement.up ? ' open-up' : ' open-down'}${placement.right ? ' align-right' : ' align-left'}`}
+          role="listbox"
+          onClick={e => e.stopPropagation()}
+        >
           {options.map(opt => (
             <button
               key={opt.value}
