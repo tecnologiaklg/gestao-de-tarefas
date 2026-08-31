@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { SqlConsoleModal } from '../modals/SqlConsoleModal';
 
 const cargoLabel: Record<string, string> = {
   DIRETOR: 'Diretor', GERENTE: 'Gerente', COORDENADOR: 'Coordenador', FUNCIONARIO: 'Funcionário',
@@ -82,11 +84,20 @@ function IconMoon() {
   );
 }
 
+function IconTerminal() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" />
+    </svg>
+  );
+}
+
 /* ── Component ────────────────────────────────────────────── */
 export function NavSidebar() {
   const { user, isRoot, logout } = useAuth();
   const { theme, toggleTheme }   = useTheme();
   const navigate = useNavigate();
+  const [showSql, setShowSql]    = useState(false);
 
   const handleLogout = () => { logout(); navigate('/login'); };
   const initials = (user?.nome ?? 'U').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -138,9 +149,18 @@ export function NavSidebar() {
               <span className="icon"><IconLogs /></span>
               Logs
             </NavLink>
+            <button
+              className="sidebar-item sidebar-sql-btn"
+              onClick={() => setShowSql(true)}
+            >
+              <span className="icon"><IconTerminal /></span>
+              Console SQL
+            </button>
           </>
         )}
       </nav>
+
+      {showSql && <SqlConsoleModal onClose={() => setShowSql(false)} />}
 
       {/* Footer */}
       <div className="sidebar-footer">
