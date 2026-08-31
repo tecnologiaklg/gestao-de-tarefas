@@ -16,6 +16,7 @@ router.use((req: Request, res: Response, next) => {
   next();
 });
 
+router.get('/todas',          checkNotRoot, TarefaController.todas);
 router.get('/minhas',         checkNotRoot, TarefaController.minhas);
 router.get('/criadas',        checkNotRoot, TarefaController.criadas);
 router.get('/equipe',         checkNotRoot, checkCoordenador, TarefaController.equipe);

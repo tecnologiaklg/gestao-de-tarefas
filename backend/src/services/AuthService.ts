@@ -15,7 +15,6 @@ interface PendingCode {
 const pendingCodes = new Map<string, PendingCode>();
 
 function gerarCodigo(): string {
-  // 6 caracteres alfanuméricos maiúsculos (ex: A3F7K2)
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
@@ -24,16 +23,6 @@ function limparExpirados() {
   for (const [code, data] of pendingCodes) {
     if (data.expiresAt < agora) pendingCodes.delete(code);
   }
-}
-
-function getInicioDaSemana(): Date {
-  const agora = new Date();
-  const diaSemana = agora.getDay(); // 0=Dom, 1=Seg, ..., 6=Sab
-  const diff = diaSemana === 0 ? 6 : diaSemana - 1;
-  const segunda = new Date(agora);
-  segunda.setDate(agora.getDate() - diff);
-  segunda.setHours(0, 0, 0, 0);
-  return segunda;
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -54,7 +43,7 @@ export const AuthService = {
     if (!usuario) throw new UnauthorizedError('PIN inválido');
     if (!usuario.ativo) throw new ForbiddenError('Usuário inativo');
 
-    // CASO 1 — Discord não vinculado → bloqueia, pede para vincular
+    // CASO 1 — Discord não vinculado → pede para vincular
     if (!usuario.discord_vinculado) {
       await LogRepository.registrar({
         usuario_id: usuario.id,
@@ -67,34 +56,18 @@ export const AuthService = {
       };
     }
 
-    // CASO 2 — Já confirmou no Discord nesta semana → Login direto com o PIN
-    const inicioDaSemana = getInicioDaSemana();
-    const ultimoLoginDiscord = usuario.ultimo_login_discord ? new Date(usuario.ultimo_login_discord) : null;
-    const jaConfirmouNaSemana = ultimoLoginDiscord && ultimoLoginDiscord >= inicioDaSemana;
-
-    if (jaConfirmouNaSemana) {
-      const payload = { id: usuario.id, nome: usuario.nome, cargo: usuario.cargo, setor_id: usuario.setor_id };
-      const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);
-      await LogRepository.registrar({
-        usuario_id: usuario.id,
-        tipo_evento: 'LOGIN',
-        descricao: `Login direto via PIN — ${usuario.nome}`,
-      });
-      return { status: 'ok' as const, token, user: payload };
-    }
-
-    // CASO 3 — Primeira confirmação da semana → gera código e envia no Discord
+    // CASO 2 — Discord já vinculado → envia código de confirmação por DM
+    // (ocorre sempre que não há JWT válido — novo dispositivo, cookie perdido, etc.)
     limparExpirados();
     const code = gerarCodigo();
     pendingCodes.set(code, { userId: usuario.id, expiresAt: Date.now() + 5 * 60 * 1000 });
 
-    // Envia DM no Discord (direto e sem clichês)
     axios.post(`${env.BOT_INTERNAL_URL}/notify`, {
       discord_id: usuario.discord_id,
       mensagem: [
         `Código de acesso ao **Portal de Tarefas**: **\`${code}\`**`,
         ``,
-        `Digite este código no portal para validar seu acesso desta semana.`,
+        `Expira em 5 minutos. Se não foi você, ignore esta mensagem.`,
       ].join('\n'),
     }).catch((err: unknown) => {
       console.warn('[AuthService] Falha ao enviar código Discord:', err instanceof Error ? err.message : err);
@@ -103,12 +76,12 @@ export const AuthService = {
     await LogRepository.registrar({
       usuario_id: usuario.id,
       tipo_evento: 'LOGIN_AGUARDANDO_DISCORD',
-      descricao: `Código semanal enviado para Discord de ${usuario.nome}`,
+      descricao: `Código de acesso enviado para Discord de ${usuario.nome}`,
     });
 
     return {
       status: 'discord_confirmation_required' as const,
-      message: 'Confirmação semanal: digite o código enviado no seu Discord.',
+      message: 'Digite o código enviado no seu Discord para confirmar o acesso.',
     };
   },
 
@@ -125,10 +98,8 @@ export const AuthService = {
     if (!usuario) throw new UnauthorizedError('Usuário não encontrado');
     if (!usuario.ativo) throw new ForbiddenError('Usuário inativo');
 
-    // Registra a confirmação semanal no banco
-    await UsuarioRepository.updateUltimoLoginDiscord(usuario.id);
-
     const payload = { id: usuario.id, nome: usuario.nome, cargo: usuario.cargo, setor_id: usuario.setor_id };
+    // JWT com vida longa (30d padrão via env JWT_EXPIRES_IN)
     const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);
 
     await LogRepository.registrar({

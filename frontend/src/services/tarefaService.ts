@@ -11,6 +11,10 @@ export interface CreateTarefaData {
 }
 
 export const tarefaService = {
+  todas: async (params?: Record<string, string>) => {
+    const { data } = await api.get<Tarefa[]>('/tarefas/todas', { params });
+    return data;
+  },
   minhas: async (params?: Record<string, string>) => {
     const { data } = await api.get<Tarefa[]>('/tarefas/minhas', { params });
     return data;

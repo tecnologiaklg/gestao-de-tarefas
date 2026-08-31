@@ -79,6 +79,19 @@ export const TarefaRepository = {
     return rows;
   },
 
+  // Todas as tarefas onde o usuário é responsável OU criador (sem duplicatas)
+  findTodasDoUsuario: async (userId: number, filters: TarefaFilters = {}): Promise<Tarefa[]> => {
+    const params: unknown[] = [userId];
+    let sql = applyFilters(
+      `${BASE_SELECT} WHERE (t.responsavel_id = $1 OR t.criador_id = $1)`,
+      params,
+      filters
+    );
+    sql += ' ORDER BY t.criado_em DESC';
+    const { rows } = await query<Tarefa>(sql, params);
+    return rows;
+  },
+
   create: async (data: CreateTarefaData): Promise<{ id: number }> => {
     const { rows } = await query<{ id: number }>(
       `INSERT INTO tarefas (titulo, descricao, criador_id, responsavel_id, setor_id, prioridade, prazo)

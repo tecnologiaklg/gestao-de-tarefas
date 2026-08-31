@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { tarefaService } from '../services/tarefaService';
 import { Tarefa } from '../types';
 
-export function useTarefas(mode: 'minhas' | 'criadas' | 'equipe', params?: Record<string, string>) {
+export function useTarefas(mode: 'todas' | 'minhas' | 'criadas' | 'equipe', params?: Record<string, string>) {
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
@@ -11,7 +11,8 @@ export function useTarefas(mode: 'minhas' | 'criadas' | 'equipe', params?: Recor
     setLoading(true);
     setError(null);
     try {
-      const data = mode === 'minhas'  ? await tarefaService.minhas(params)
+      const data = mode === 'todas'   ? await tarefaService.todas(params)
+                 : mode === 'minhas'  ? await tarefaService.minhas(params)
                  : mode === 'criadas' ? await tarefaService.criadas(params)
                  :                      await tarefaService.equipe(params);
       setTarefas(data);

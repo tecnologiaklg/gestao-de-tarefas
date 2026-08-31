@@ -8,6 +8,12 @@ export const TarefaController = {
   buscar: async (req: Request, res: Response, next: NextFunction) => {
     try { res.json(await TarefaService.buscarPorId(paramId(req), req.user)); } catch (e) { next(e); }
   },
+  todas: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const u = req.user as { id: number };
+      res.json(await TarefaService.todasTarefas(u.id, req.query as Record<string, string>));
+    } catch (e) { next(e); }
+  },
   minhas: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const u = req.user as { id: number };

@@ -1598,3 +1598,264 @@ a { color: inherit; text-decoration: none; }
     gap: var(--space-3);
   }
 }
+
+/* ================================================================
+   Dark Mode — Charcoal/Slate (não preto, apenas mais escuro)
+================================================================ */
+[data-theme="dark"] {
+  --bg-canvas:  #1C1C1A;
+  --bg-surface: #242420;
+  --bg-raised:  #2C2C28;
+
+  --stone-50:  #2C2C28;
+  --stone-100: #343430;
+  --stone-150: #3C3C38;
+  --stone-200: #464640;
+  --stone-300: #5A5A54;
+  --stone-400: #808078;
+  --stone-500: #A0A098;
+  --stone-600: #C0C0B8;
+  --stone-700: #D8D8D0;
+  --stone-800: #E8E8E0;
+  --stone-900: #F4F4EC;
+
+  --color-primary-light: rgba(61, 122, 110, 0.15);
+  --color-primary-soft:  rgba(61, 122, 110, 0.25);
+
+  --color-success-bg:  rgba(45, 106, 79, 0.18);
+  --color-warning-bg:  rgba(146, 64, 14, 0.18);
+  --color-danger-bg:   rgba(155, 28, 28, 0.18);
+  --color-info-bg:     rgba(30, 78, 140, 0.18);
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.30), 0 1px 2px -1px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 3px 8px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.20);
+  --shadow-lg: 0 8px 20px -4px rgba(0, 0, 0, 0.40), 0 4px 8px -4px rgba(0, 0, 0, 0.20);
+}
+
+/* ── Dark Mode: TaskCard específico ── */
+[data-theme="dark"] .task-card {
+  background: var(--bg-surface);
+  border-color: var(--stone-200);
+}
+
+[data-theme="dark"] .task-card:hover {
+  background: var(--bg-raised);
+  border-color: var(--stone-300);
+}
+
+/* ── Dark Mode: Sidebar ── */
+[data-theme="dark"] .task-sidebar {
+  background: var(--bg-surface);
+  border-left-color: var(--stone-200);
+}
+
+/* ================================================================
+   Perspectiva de Tarefas
+================================================================ */
+
+/* Tabs de perspectiva */
+.perspectiva-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: var(--space-3);
+  background: var(--stone-100);
+  border-radius: var(--radius-lg);
+  padding: 3px;
+  flex-shrink: 0;
+  width: fit-content;
+}
+
+.perspectiva-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--stone-500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+  white-space: nowrap;
+}
+
+.perspectiva-tab:hover {
+  color: var(--stone-700);
+  background: var(--stone-150);
+}
+
+.perspectiva-tab.active {
+  background: var(--bg-surface);
+  color: var(--stone-900);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.perspectiva-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Legenda de perspectiva */
+.perspectiva-legend {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+  flex-shrink: 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-xs);
+  color: var(--stone-500);
+  font-weight: 500;
+}
+
+.legend-item::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.legend-para-mim::before       { background: var(--color-primary); }
+.legend-eu-para-mim::before    { background: var(--color-info); }
+.legend-eu-para-outros::before { background: var(--color-warning); }
+
+/* ── Barra lateral de perspectiva no card ── */
+.task-card {
+  position: relative;
+}
+
+.task-card-persp-bar {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px 0 0 2px;
+  background: var(--card-persp-color, var(--color-primary));
+  opacity: 0.55;
+  transition: opacity var(--transition-fast);
+}
+
+.task-card:hover .task-card-persp-bar {
+  opacity: 0.85;
+}
+
+/* Self-assigned badge */
+.task-card-self-badge {
+  color: var(--color-info) !important;
+  font-weight: 600;
+}
+
+/* ================================================================
+   Sidebar Unificada — novos elementos
+================================================================ */
+
+/* Divisor de seção dentro da sidebar */
+.sidebar-section-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-3);
+  flex-shrink: 0;
+}
+
+.sidebar-section-divider::before,
+.sidebar-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--stone-150);
+}
+
+.sidebar-section-divider span {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--stone-400);
+  white-space: nowrap;
+}
+
+/* Badge na tab da sidebar */
+.sidebar-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 3px;
+}
+
+/* Dica vazia na sidebar */
+.sidebar-empty-hint {
+  color: var(--stone-400);
+  font-size: var(--font-sm);
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+/* Grid de detalhes na sidebar */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+/* ================================================================
+   NavSidebar — botões do rodapé
+================================================================ */
+
+.sidebar-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-xs);
+  font-weight: 500;
+  color: var(--stone-500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-theme-btn:hover {
+  background: var(--stone-100);
+  color: var(--stone-700);
+}

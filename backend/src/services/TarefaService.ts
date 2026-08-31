@@ -37,6 +37,9 @@ export const TarefaService = {
   criadasPorMim: (userId: number, filters: TarefaFilters) =>
     TarefaRepository.findCriadasPorMim(userId, filters),
 
+  todasTarefas: (userId: number, filters: TarefaFilters) =>
+    TarefaRepository.findTodasDoUsuario(userId, filters),
+
   tarefasEquipe: async (user: JWTPayload, filters: TarefaFilters): Promise<Tarefa[]> => {
     const u = asUser(user);
     if (u.cargo !== 'COORDENADOR') throw new ForbiddenError('Apenas coordenadores podem ver tarefas da equipe');
@@ -50,7 +53,7 @@ export const TarefaService = {
     const u = asUser(user);
     const { titulo, descricao, responsavel_id, setor_id, prioridade, prazo } = dados;
 
-    if (responsavel_id === u.id) throw new ForbiddenError('Você não pode criar uma tarefa para si mesmo');
+    // Autotribuição permitida: usuário pode criar tarefa para si mesmo
 
     const responsavel = await UsuarioRepository.findById(responsavel_id);
     if (!responsavel) throw new NotFoundError('Responsável não encontrado');
@@ -84,7 +87,6 @@ export const TarefaService = {
 
     const responsavel_id = campos.responsavel_id as number | undefined;
     if (responsavel_id) {
-      if (responsavel_id === u.id) throw new ForbiddenError('Você não pode ser o responsável de sua própria tarefa');
       const resp = await UsuarioRepository.findById(responsavel_id);
       if (!resp) throw new NotFoundError('Responsável não encontrado');
       if (!resp.ativo) throw new UnprocessableError('Responsável inativo');

@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import {
-  DndContext, DragEndEvent, DragOverEvent, DragStartEvent,
+  DndContext, DragEndEvent, DragStartEvent,
   PointerSensor, useSensor, useSensors, closestCorners, DragOverlay,
 } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
 import { Tarefa, Status } from '../../types';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskCard } from './TaskCard';
@@ -19,15 +18,17 @@ const ALLOWED: Record<Status, Status[]> = {
   CONCLUIDA:    [],
 };
 
+type Perspectiva = 'para_mim' | 'eu_para_mim' | 'eu_para_outros';
+
 interface Props {
   tarefas: Tarefa[];
   setTarefas: (t: Tarefa[]) => void;
-  variant: 'minhas' | 'criadas';
   onCardClick: (t: Tarefa) => void;
-  isResponsavel: boolean; // só responsável pode mover
+  isResponsavel: boolean;
+  getPerspectiva?: (t: Tarefa) => Perspectiva;
 }
 
-export function KanbanBoard({ tarefas, setTarefas, variant, onCardClick, isResponsavel }: Props) {
+export function KanbanBoard({ tarefas, setTarefas, onCardClick, isResponsavel, getPerspectiva }: Props) {
   const [activeId, setActiveId]           = useState<number | null>(null);
   const [waitingModal, setWaitingModal]   = useState<{ tarefaId: number; targetStatus: Status } | null>(null);
   const [pendingDrop, setPendingDrop]     = useState<{ tarefaId: number; from: Status; to: Status } | null>(null);
@@ -49,6 +50,9 @@ export function KanbanBoard({ tarefas, setTarefas, variant, onCardClick, isRespo
     if (!STATUSES.includes(newStatus) || newStatus === tarefa.status) return;
     if (!ALLOWED[tarefa.status]?.includes(newStatus)) return;
 
+    // Bloquear mover se for "criada para outros" (criador não move)
+    if (getPerspectiva && getPerspectiva(tarefa) === 'eu_para_outros') return;
+
     if (newStatus === 'AGUARDANDO') {
       setPendingDrop({ tarefaId: tarefa.id, from: tarefa.status, to: newStatus });
       setWaitingModal({ tarefaId: tarefa.id, targetStatus: newStatus });
@@ -59,12 +63,10 @@ export function KanbanBoard({ tarefas, setTarefas, variant, onCardClick, isRespo
   };
 
   const applyStatusChange = async (id: number, from: Status, to: Status, motivo?: string) => {
-    // Optimistic update
     setTarefas(tarefas.map(t => t.id === id ? { ...t, status: to } : t));
     try {
       await tarefaService.alterarStatus(id, to, motivo);
     } catch {
-      // Reverte em caso de erro
       setTarefas(tarefas.map(t => t.id === id ? { ...t, status: from } : t));
       alert('Não foi possível alterar o status. Verifique as permissões.');
     }
@@ -96,13 +98,13 @@ export function KanbanBoard({ tarefas, setTarefas, variant, onCardClick, isRespo
               key={s}
               status={s}
               tarefas={byStatus(s)}
-              variant={variant}
               onCardClick={onCardClick}
+              getPerspectiva={getPerspectiva}
             />
           ))}
         </div>
         <DragOverlay>
-          {active && <TaskCard tarefa={active} variant={variant} onClick={() => {}} isDragging />}
+          {active && <TaskCard tarefa={active} onClick={() => {}} isDragging perspectiva={getPerspectiva?.(active)} />}
         </DragOverlay>
       </DndContext>
 
