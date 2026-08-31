@@ -5,6 +5,8 @@ import { KanbanBoard } from '../components/kanban/KanbanBoard';
 import { TaskSidebar } from '../components/sidebar/TaskSidebar';
 import { CreateTaskModal } from '../components/modals/CreateTaskModal';
 import { Button } from '../components/ui/Button';
+import { CustomSelect } from '../components/ui/CustomSelect';
+import { DatePicker } from '../components/ui/DatePicker';
 import { useTarefas } from '../hooks/useTarefas';
 import { useKpis } from '../hooks/useKpis';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,26 +23,6 @@ function SearchIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-
-function IconFlag() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-      <line x1="4" y1="22" x2="4" y2="15" />
-    </svg>
-  );
-}
-
-function IconCalendar() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   );
 }
@@ -143,32 +125,28 @@ export function TarefasPage() {
 
         <div className="filter-divider" />
 
-        {/* Dropdown de Prioridade Estilizado com Ícone */}
-        <div className="filter-control-wrap" data-active={prioridade ? 'true' : 'false'}>
-          <span className="filter-control-icon"><IconFlag /></span>
-          <select
+        {/* Prioridade — CustomSelect */}
+        <div className="filter-control-wrap filter-select-wrap" data-active={prioridade ? 'true' : 'false'}>
+          <CustomSelect
             id="filter-prioridade"
-            className="filter-select"
             value={prioridade}
-            onChange={e => setPrioridade(e.target.value)}
-          >
-            <option value="">Todas prioridades</option>
-            <option value="BAIXA">Baixa</option>
-            <option value="NORMAL">Normal</option>
-            <option value="URGENTE">Urgente</option>
-          </select>
+            onChange={setPrioridade}
+            options={[
+              { value: '', label: 'Todas prioridades' },
+              { value: 'BAIXA', label: '🟢 Baixa' },
+              { value: 'NORMAL', label: '🔵 Normal' },
+              { value: 'URGENTE', label: '🔴 Urgente' },
+            ]}
+          />
         </div>
 
-        {/* Campo de Data Estilizado com Ícone de Calendário */}
-        <div className="filter-control-wrap" data-active={prazo ? 'true' : 'false'}>
-          <span className="filter-control-icon"><IconCalendar /></span>
-          <input
+        {/* Data — DatePicker customizado */}
+        <div className="filter-control-wrap filter-date-wrap" data-active={prazo ? 'true' : 'false'}>
+          <DatePicker
             id="filter-prazo"
-            type="date"
-            className="filter-date-input"
             value={prazo}
-            onChange={e => setPrazo(e.target.value)}
-            title="Filtrar por data limite"
+            onChange={setPrazo}
+            placeholder="Filtrar por prazo"
           />
         </div>
 

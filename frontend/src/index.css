@@ -539,6 +539,35 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
 }
 
+/* Filter wraps com componentes customizados — sem bordas duplas */
+.filter-select-wrap,
+.filter-date-wrap {
+  padding: 0;
+  min-width: 140px;
+}
+.filter-select-wrap .custom-select-trigger,
+.filter-date-wrap .datepicker-trigger {
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  font-size: var(--font-sm);
+  box-shadow: none;
+}
+.filter-select-wrap .custom-select-trigger:focus,
+.filter-select-wrap .custom-select-trigger.open,
+.filter-date-wrap .datepicker-trigger:focus,
+.filter-date-wrap .datepicker-trigger.open {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+.filter-select-wrap[data-active="true"] .custom-select-value,
+.filter-date-wrap[data-active="true"] .datepicker-value {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
 .filter-control-icon {
   position: absolute;
   left: 9px;
@@ -581,30 +610,6 @@ a { color: inherit; text-decoration: none; }
 .form-select:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.12);
-}
-
-/* Datepicker Moderno */
-.filter-date-input {
-  padding: 6px 10px 6px 28px;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-md);
-  font-size: var(--font-sm);
-  font-family: var(--font-family);
-  color: var(--stone-700);
-  cursor: pointer;
-  outline: none;
-}
-
-/* Estilo do botão de calendário do navegador */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.6;
-  transition: opacity var(--transition-fast);
-  padding: 2px;
-}
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
 }
 
 /* Botão Limpar Filtros */
@@ -2868,7 +2873,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 [data-theme="dark"] .destino-desc  { color: var(--stone-500); }
 
 /* ================================================================
-   CustomSelect — Dropdown customizado
+   CustomSelect — Dropdown customizado premium
 ================================================================ */
 
 .custom-select-wrap {
@@ -2876,7 +2881,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   width: 100%;
 }
 .custom-select-wrap.disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -2886,48 +2891,71 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
   color: var(--stone-800);
   font-size: var(--font-xs);
   font-family: var(--font-family);
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: all 160ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 .custom-select-trigger:hover {
-  border-color: var(--stone-300);
+  border-color: var(--color-primary-mid);
+  background: #FCFDFD;
 }
 .custom-select-trigger.open,
 .custom-select-trigger:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.10);
+  box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.12);
   outline: none;
+  background: #fff;
 }
 .custom-select-trigger svg {
   flex-shrink: 0;
   color: var(--stone-400);
+  transition: transform 180ms ease, color 160ms ease;
+}
+.custom-select-trigger:hover svg,
+.custom-select-trigger.open svg {
+  color: var(--color-primary);
 }
 
-.custom-select-value   { color: var(--stone-800); }
-.custom-select-placeholder { color: var(--stone-400); }
+.custom-select-value {
+  color: var(--stone-800);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.custom-select-placeholder {
+  color: var(--stone-400);
+  font-weight: 400;
+}
 
 .custom-select-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 5px);
   left: 0;
   right: 0;
-  z-index: 200;
-  background: var(--bg-surface);
+  z-index: 400;
+  background: #ffffff;
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 8px 24px -4px rgba(22,22,19,0.12), 0 2px 8px -2px rgba(22,22,19,0.06);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 14px 36px -4px rgba(22, 22, 19, 0.16), 0 4px 12px -2px rgba(22, 22, 19, 0.08);
   overflow: hidden;
-  max-height: 220px;
+  max-height: 240px;
   overflow-y: auto;
-  padding: 4px;
+  padding: 6px;
+  animation: picker-appear 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes picker-appear {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .custom-select-dropdown::-webkit-scrollbar { width: 4px; }
 .custom-select-dropdown::-webkit-scrollbar-thumb { background: var(--stone-200); border-radius: 4px; }
@@ -2938,16 +2966,17 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--stone-700);
   font-size: var(--font-xs);
   font-family: var(--font-family);
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: background 120ms ease, color 120ms ease;
+  transition: all 120ms ease;
 }
 .custom-select-option:hover {
   background: var(--stone-100);
@@ -2963,7 +2992,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* ================================================================
-   DatePicker — Calendário customizado
+   DatePicker — Calendário Moderno e Elegante
 ================================================================ */
 
 .datepicker-wrap {
@@ -2971,7 +3000,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   width: 100%;
 }
 .datepicker-wrap.disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -2981,91 +3010,131 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
   color: var(--stone-800);
   font-size: var(--font-xs);
   font-family: var(--font-family);
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: all 160ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
-.datepicker-trigger:hover { border-color: var(--stone-300); }
+.datepicker-trigger:hover {
+  border-color: var(--color-primary-mid);
+  background: #FCFDFD;
+}
 .datepicker-trigger.open,
 .datepicker-trigger:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.10);
+  box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.12);
   outline: none;
+  background: #fff;
 }
-.datepicker-trigger svg { flex-shrink: 0; color: var(--stone-400); }
-.datepicker-value      { color: var(--stone-800); }
-.datepicker-placeholder{ color: var(--stone-400); }
+.datepicker-trigger svg {
+  flex-shrink: 0;
+  color: var(--stone-400);
+  transition: color 160ms ease;
+}
+.datepicker-trigger:hover svg,
+.datepicker-trigger.open svg {
+  color: var(--color-primary);
+}
+.datepicker-value {
+  color: var(--stone-800);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.datepicker-placeholder {
+  color: var(--stone-400);
+  font-weight: 400;
+}
 
 .datepicker-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 5px);
   left: 0;
-  z-index: 200;
-  background: var(--bg-surface);
+  z-index: 400;
+  background: #ffffff;
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 12px 32px -6px rgba(22,22,19,0.14), 0 4px 10px -3px rgba(22,22,19,0.07);
-  padding: 14px 12px 10px;
-  width: 260px;
+  border-radius: 12px;
+  box-shadow: 0 18px 45px -8px rgba(22, 22, 19, 0.18), 0 6px 16px -4px rgba(22, 22, 19, 0.08);
+  width: 270px;
+  overflow: hidden;
   user-select: none;
+  animation: picker-appear 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Header estilizado */
 .datepicker-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #3D7A6E 0%, #2E6059 100%);
+  color: #ffffff;
 }
 .datepicker-month-label {
-  font-size: var(--font-xs);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--stone-800);
-  text-transform: capitalize;
+  color: #ffffff;
+}
+.datepicker-year-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
 }
 .datepicker-nav-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--stone-500);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: all 120ms ease;
 }
 .datepicker-nav-btn:hover {
-  background: var(--stone-100);
-  color: var(--stone-800);
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.datepicker-body {
+  padding: 10px 12px;
 }
 
 .datepicker-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .datepicker-weekday {
   text-align: center;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--stone-400);
   padding: 2px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
 }
 
 .datepicker-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 3px;
+}
+.datepicker-empty {
+  width: 100%;
+  aspect-ratio: 1;
 }
 .datepicker-day {
   width: 100%;
@@ -3074,67 +3143,69 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 7px;
   background: transparent;
   color: var(--stone-700);
   font-size: 12px;
   font-family: var(--font-family);
+  font-weight: 500;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
-  font-weight: 400;
+  transition: all 100ms ease;
 }
 .datepicker-day:hover {
   background: var(--stone-100);
   color: var(--stone-900);
+  font-weight: 700;
 }
 .datepicker-day.today {
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-soft);
 }
 .datepicker-day.selected {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
   font-weight: 700;
-}
-.datepicker-day.selected:hover {
-  background: var(--color-primary-dark);
+  box-shadow: 0 2px 6px rgba(61, 122, 110, 0.4);
 }
 
 .datepicker-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--stone-100);
+  padding: 8px 12px 10px;
+  border-top: 1px solid var(--stone-150);
+  background: var(--stone-50);
 }
 .datepicker-action-btn {
   border: none;
   background: transparent;
-  font-size: var(--font-xs);
+  font-size: 11px;
   font-family: var(--font-family);
   font-weight: 600;
   color: var(--stone-500);
   cursor: pointer;
-  padding: 3px 6px;
+  padding: 4px 8px;
   border-radius: var(--radius-md);
-  transition: background 120ms ease, color 120ms ease;
+  transition: all 120ms ease;
 }
 .datepicker-action-btn:hover {
-  background: var(--stone-100);
+  background: var(--stone-200);
   color: var(--stone-800);
 }
 .datepicker-action-btn.primary {
   color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-soft);
 }
 .datepicker-action-btn.primary:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary-dark);
+  background: var(--color-primary);
+  color: #fff;
 }
 
 /* ================================================================
-   TimePicker — Seletor de hora customizado
+   TimePicker — Seletor de Hora Moderno
 ================================================================ */
 
 .timepicker-wrap {
@@ -3142,7 +3213,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   width: 100%;
 }
 .timepicker-wrap.disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -3150,71 +3221,116 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
   color: var(--stone-800);
   font-size: var(--font-xs);
   font-family: var(--font-family);
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: all 160ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
-.timepicker-trigger:hover { border-color: var(--stone-300); }
+.timepicker-trigger:hover {
+  border-color: var(--color-primary-mid);
+  background: #FCFDFD;
+}
 .timepicker-trigger.open,
 .timepicker-trigger:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.10);
+  box-shadow: 0 0 0 3px rgba(61, 122, 110, 0.12);
   outline: none;
+  background: #fff;
 }
-.timepicker-trigger svg { flex-shrink: 0; color: var(--stone-400); }
-.timepicker-value { color: var(--stone-800); font-weight: 500; letter-spacing: 0.03em; }
+.timepicker-trigger svg {
+  flex-shrink: 0;
+  color: var(--stone-400);
+  transition: color 160ms ease;
+}
+.timepicker-trigger:hover svg,
+.timepicker-trigger.open svg {
+  color: var(--color-primary);
+}
+.timepicker-value {
+  color: var(--stone-800);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
 
 .timepicker-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 5px);
   left: 0;
-  z-index: 200;
-  background: var(--bg-surface);
+  z-index: 400;
+  background: #ffffff;
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 12px 32px -6px rgba(22,22,19,0.14), 0 4px 10px -3px rgba(22,22,19,0.07);
-  display: flex;
+  border-radius: 12px;
+  box-shadow: 0 18px 45px -8px rgba(22, 22, 19, 0.18), 0 6px 16px -4px rgba(22, 22, 19, 0.08);
+  width: 210px;
   overflow: hidden;
   user-select: none;
+  animation: picker-appear 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.timepicker-header {
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #3D7A6E 0%, #2E6059 100%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffffff;
+}
+.timepicker-header svg {
+  color: rgba(255, 255, 255, 0.85);
+}
+.timepicker-header-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.timepicker-cols {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  background: #fff;
 }
 
 .timepicker-col {
   display: flex;
   flex-direction: column;
-  min-width: 72px;
 }
 .timepicker-col-label {
   font-size: 10px;
   font-weight: 700;
   color: var(--stone-400);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 8px 12px 4px;
+  letter-spacing: 0.05em;
+  padding: 8px 0 4px;
   text-align: center;
+  border-bottom: 1px solid var(--stone-100);
+  background: var(--stone-50);
 }
 .timepicker-col-scroll {
   overflow-y: auto;
-  max-height: 180px;
-  padding: 4px 6px;
+  max-height: 170px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.timepicker-col-scroll::-webkit-scrollbar { width: 4px; }
+.timepicker-col-scroll::-webkit-scrollbar { width: 3px; }
 .timepicker-col-scroll::-webkit-scrollbar-thumb { background: var(--stone-200); border-radius: 4px; }
 
 .timepicker-divider {
   width: 1px;
   background: var(--stone-150);
-  margin: 8px 0;
 }
 
 .timepicker-item {
@@ -3223,27 +3339,25 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 6px;
   background: transparent;
   color: var(--stone-700);
-  font-size: var(--font-xs);
+  font-size: 12px;
   font-family: var(--font-family);
   font-weight: 500;
-  padding: 6px 8px;
+  padding: 6px;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
-  letter-spacing: 0.04em;
+  transition: all 100ms ease;
 }
 .timepicker-item:hover {
   background: var(--stone-100);
   color: var(--stone-900);
+  font-weight: 600;
 }
 .timepicker-item.selected {
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
   font-weight: 700;
 }
-.timepicker-item.selected:hover {
-  background: var(--color-primary-dark);
-}
+
 

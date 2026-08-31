@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 
 const MESES = [
-  'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro',
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
-const DIAS_SEMANA_CURTO = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DIAS_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 interface Props {
   id?: string;
@@ -16,7 +16,7 @@ interface Props {
 
 function IconCalendar() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
       <line x1="16" y1="2" x2="16" y2="6"/>
@@ -28,15 +28,16 @@ function IconCalendar() {
 
 function IconChevronLeft() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 18 9 12 15 6"/>
     </svg>
   );
 }
+
 function IconChevronRight() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 18 15 12 9 6"/>
     </svg>
@@ -45,13 +46,16 @@ function IconChevronRight() {
 
 function formatDisplay(value: string) {
   if (!value) return '';
-  const [y, m, d] = value.split('-');
+  const parts = value.split('-');
+  if (parts.length !== 3) return value;
+  const [y, m, d] = parts;
   return `${d}/${m}/${y}`;
 }
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
+
 function getFirstWeekday(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
@@ -62,13 +66,21 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
 
   const today = new Date();
   const [viewYear, setViewYear] = useState(() => {
-    if (value) return parseInt(value.split('-')[0]);
+    if (value && value.includes('-')) return parseInt(value.split('-')[0], 10);
     return today.getFullYear();
   });
   const [viewMonth, setViewMonth] = useState(() => {
-    if (value) return parseInt(value.split('-')[1]) - 1;
+    if (value && value.includes('-')) return parseInt(value.split('-')[1], 10) - 1;
     return today.getMonth();
   });
+
+  useEffect(() => {
+    if (value && value.includes('-')) {
+      const [y, m] = value.split('-');
+      setViewYear(parseInt(y, 10));
+      setViewMonth(parseInt(m, 10) - 1);
+    }
+  }, [value]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -78,13 +90,24 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  function prevMonth() {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
-    else setViewMonth(m => m - 1);
+  function prevMonth(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(y => y - 1);
+    } else {
+      setViewMonth(m => m - 1);
+    }
   }
-  function nextMonth() {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
-    else setViewMonth(m => m + 1);
+
+  function nextMonth(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(y => y + 1);
+    } else {
+      setViewMonth(m => m + 1);
+    }
   }
 
   function selectDay(day: number) {
@@ -94,17 +117,20 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
     setOpen(false);
   }
 
-  function goToday() {
+  function goToday(e: React.MouseEvent) {
+    e.stopPropagation();
     const t = new Date();
     const y = t.getFullYear(), m = t.getMonth(), d = t.getDate();
-    setViewYear(y); setViewMonth(m);
+    setViewYear(y);
+    setViewMonth(m);
     const mm = String(m + 1).padStart(2, '0');
     const dd = String(d).padStart(2, '0');
     onChange(`${y}-${mm}-${dd}`);
     setOpen(false);
   }
 
-  function clear() {
+  function clear(e: React.MouseEvent) {
+    e.stopPropagation();
     onChange('');
     setOpen(false);
   }
@@ -112,13 +138,12 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstWd = getFirstWeekday(viewYear, viewMonth);
 
-  // Selected date parts
   let selDay = -1, selMonth = -1, selYear = -1;
-  if (value) {
+  if (value && value.includes('-')) {
     const parts = value.split('-');
-    selYear = parseInt(parts[0]);
-    selMonth = parseInt(parts[1]) - 1;
-    selDay = parseInt(parts[2]);
+    selYear = parseInt(parts[0], 10);
+    selMonth = parseInt(parts[1], 10) - 1;
+    selDay = parseInt(parts[2], 10);
   }
 
   const isToday = (d: number) =>
@@ -126,7 +151,6 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
   const isSelected = (d: number) =>
     d === selDay && viewMonth === selMonth && viewYear === selYear;
 
-  // Build calendar grid (blanks + days)
   const cells: (number | null)[] = [
     ...Array(firstWd).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
@@ -147,49 +171,56 @@ export function DatePicker({ id, value, onChange, placeholder = 'dd/mm/aaaa', di
       </button>
 
       {open && (
-        <div className="datepicker-dropdown">
-          {/* Header de navegação */}
+        <div className="datepicker-dropdown" onClick={e => e.stopPropagation()}>
+          {/* Top header navigation */}
           <div className="datepicker-header">
-            <button type="button" className="datepicker-nav-btn" onClick={prevMonth}>
+            <button type="button" className="datepicker-nav-btn" onClick={prevMonth} title="Mês anterior">
               <IconChevronLeft />
             </button>
-            <span className="datepicker-month-label">
-              {MESES[viewMonth]} de {viewYear}
-            </span>
-            <button type="button" className="datepicker-nav-btn" onClick={nextMonth}>
+            <div className="datepicker-month-label">
+              <span>{MESES[viewMonth]}</span>
+              <span className="datepicker-year-badge">{viewYear}</span>
+            </div>
+            <button type="button" className="datepicker-nav-btn" onClick={nextMonth} title="Próximo mês">
               <IconChevronRight />
             </button>
           </div>
 
-          {/* Dias da semana */}
-          <div className="datepicker-weekdays">
-            {DIAS_SEMANA_CURTO.map(d => (
-              <span key={d} className="datepicker-weekday">{d}</span>
-            ))}
-          </div>
+          <div className="datepicker-body">
+            {/* Weekdays */}
+            <div className="datepicker-weekdays">
+              {DIAS_SEMANA.map((d, i) => (
+                <span key={`wd-${i}`} className="datepicker-weekday">{d}</span>
+              ))}
+            </div>
 
-          {/* Grade de dias */}
-          <div className="datepicker-grid">
-            {cells.map((day, i) => (
-              day === null
-                ? <span key={`empty-${i}`} />
-                : (
+            {/* Day grid */}
+            <div className="datepicker-grid">
+              {cells.map((day, i) =>
+                day === null ? (
+                  <span key={`empty-${i}`} className="datepicker-empty" />
+                ) : (
                   <button
-                    key={day}
+                    key={`day-${day}`}
                     type="button"
-                    className={`datepicker-day${isSelected(day) ? ' selected' : ''}${isToday(day) && !isSelected(day) ? ' today' : ''}`}
+                    className={`datepicker-day${isSelected(day) ? ' selected' : ''}${isToday(day) ? ' today' : ''}`}
                     onClick={() => selectDay(day)}
                   >
                     {day}
                   </button>
                 )
-            ))}
+              )}
+            </div>
           </div>
 
-          {/* Ações */}
+          {/* Quick Actions Footer */}
           <div className="datepicker-actions">
-            <button type="button" className="datepicker-action-btn" onClick={clear}>Limpar</button>
-            <button type="button" className="datepicker-action-btn primary" onClick={goToday}>Hoje</button>
+            <button type="button" className="datepicker-action-btn clear" onClick={clear}>
+              Limpar
+            </button>
+            <button type="button" className="datepicker-action-btn primary" onClick={goToday}>
+              Hoje
+            </button>
           </div>
         </div>
       )}
