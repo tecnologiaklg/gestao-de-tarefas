@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
+import { CustomSelect } from '../ui/CustomSelect';
+import { DatePicker } from '../ui/DatePicker';
+import { TimePicker } from '../ui/TimePicker';
 import { ConfirmCreateModal } from './ConfirmCreateModal';
 import { PriorityHelpModal } from './PriorityHelpModal';
 import { useSetores } from '../../hooks/useData';
@@ -124,12 +127,12 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
   const { user } = useAuth();
   const { setores } = useSetores();
 
-  const [destino, setDestino]       = useState<Destino>(null);
-  const [usuarios, setUsuarios]     = useState<Partial<Usuario>[]>([]);
+  const [destino, setDestino]         = useState<Destino>(null);
+  const [usuarios, setUsuarios]       = useState<Partial<Usuario>[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showHelp, setShowHelp]     = useState(false);
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState('');
+  const [showHelp, setShowHelp]       = useState(false);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState('');
 
   const [form, setForm] = useState({
     titulo: '', descricao: '', setor_id: '', responsavel_id: '',
@@ -210,6 +213,14 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
     );
   }
 
+  const setorOptions = setores.map(s => ({ value: String(s.id), label: s.nome }));
+  const responsavelOptions = usuarios.map(u => ({ value: String(u.id), label: u.nome ?? '' }));
+  const prioridadeOptions = [
+    { value: 'BAIXA', label: '🟢 Baixa' },
+    { value: 'NORMAL', label: '🔵 Normal' },
+    { value: 'URGENTE', label: '🔴 Urgente' },
+  ];
+
   // Step 1 — formulário
   return (
     <>
@@ -289,45 +300,40 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
-                    Setor <span className="required">*</span>
-                  </label>
-                  <select
-                    id="task-setor"
-                    className="form-select"
-                    value={form.setor_id}
-                    onChange={e => handleSetorChange(e.target.value)}
-                    // "Para mim" bloqueia setor (já preenchido)
-                    disabled={destino === 'eu'}
-                    style={{ padding: '6px 10px' }}
-                  >
-                    <option value="">Selecione…</option>
-                    {setores.map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}
-                  </select>
-                </div>
+              {/* Setor e Responsável — apenas para "Para outra pessoa" */}
+              {destino === 'outro' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
+                      Setor <span className="required">*</span>
+                    </label>
+                    <CustomSelect
+                      id="task-setor"
+                      value={form.setor_id}
+                      onChange={handleSetorChange}
+                      options={setorOptions}
+                      placeholder="Selecione…"
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
-                    Responsável <span className="required">*</span>
-                  </label>
-                  <select
-                    id="task-responsavel"
-                    className="form-select"
-                    value={form.responsavel_id}
-                    onChange={set('responsavel_id')}
-                    // "Para mim" bloqueia responsável (já preenchido com o próprio usuário)
-                    disabled={destino === 'eu' || !form.setor_id}
-                    style={{ padding: '6px 10px' }}
-                  >
-                    <option value="">Selecione…</option>
-                    {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
-                  </select>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
+                      Responsável <span className="required">*</span>
+                    </label>
+                    <CustomSelect
+                      id="task-responsavel"
+                      value={form.responsavel_id}
+                      onChange={v => setForm(f => ({ ...f, responsavel_id: v }))}
+                      options={responsavelOptions}
+                      placeholder="Selecione…"
+                      disabled={!form.setor_id}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                {/* Prioridade */}
                 <div className="form-group">
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
                     <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
@@ -342,39 +348,29 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                       <IconHelp /><span>Guia</span>
                     </button>
                   </div>
-                  <select
+                  <CustomSelect
                     id="task-prioridade"
-                    className="form-select"
                     value={form.prioridade}
-                    onChange={set('prioridade')}
-                    style={{ padding: '6px 10px' }}
-                  >
-                    <option value="BAIXA">Baixa</option>
-                    <option value="NORMAL">Normal</option>
-                    <option value="URGENTE">Urgente</option>
-                  </select>
+                    onChange={v => setForm(f => ({ ...f, prioridade: v }))}
+                    options={prioridadeOptions}
+                  />
                 </div>
 
+                {/* Prazo */}
                 <div className="form-group">
                   <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
                     Prazo de Entrega <span className="required">*</span>
                   </label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 6 }}>
-                    <input
+                    <DatePicker
                       id="task-data"
-                      type="date"
-                      className="form-input"
                       value={form.data}
-                      onChange={set('data')}
-                      style={{ padding: '6px 8px', fontSize: 'var(--font-xs)' }}
+                      onChange={v => setForm(f => ({ ...f, data: v }))}
                     />
-                    <input
+                    <TimePicker
                       id="task-hora"
-                      type="time"
-                      className="form-input"
                       value={form.hora}
-                      onChange={set('hora')}
-                      style={{ padding: '6px 6px', fontSize: 'var(--font-xs)' }}
+                      onChange={v => setForm(f => ({ ...f, hora: v }))}
                     />
                   </div>
                 </div>
