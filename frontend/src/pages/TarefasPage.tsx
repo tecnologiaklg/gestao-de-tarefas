@@ -10,12 +10,11 @@ import { useKpis } from '../hooks/useKpis';
 import { useAuth } from '../contexts/AuthContext';
 import { Tarefa } from '../types';
 
-type Perspectiva = 'todas' | 'para_mim' | 'criadas_por_mim';
+type Perspectiva = 'minhas_tarefas' | 'criadas_por_mim';
 
 const PERSPECTIVAS: { value: Perspectiva; label: string }[] = [
-  { value: 'todas',          label: 'Todas' },
-  { value: 'para_mim',       label: 'Para mim' },
-  { value: 'criadas_por_mim',label: 'Criadas por mim' },
+  { value: 'minhas_tarefas',  label: 'Minhas tarefas' },
+  { value: 'criadas_por_mim', label: 'Criadas por mim' },
 ];
 
 const PRIORIDADES = ['', 'BAIXA', 'NORMAL', 'URGENTE'] as const;
@@ -30,7 +29,7 @@ function SearchIcon() {
 
 export function TarefasPage() {
   const { user } = useAuth();
-  const [perspectiva, setPerspectiva] = useState<Perspectiva>('todas');
+  const [perspectiva, setPerspectiva] = useState<Perspectiva>('minhas_tarefas');
   const [search, setSearch]           = useState('');
   const [prioridade, setPrioridade]   = useState('');
   const [prazo, setPrazo]             = useState('');
@@ -48,12 +47,17 @@ export function TarefasPage() {
   // Filtra por perspectiva no client
   const tarefasFiltradas = tarefas.filter(t => {
     const uid = user?.id;
-    // Para mim → outros criaram pra mim (eu sou responsável mas não criador)
-    if (perspectiva === 'para_mim')        return t.responsavel_id === uid && t.criador_id !== uid;
+    // Minhas tarefas → outros criaram pra mim (eu sou responsável mas não criador)
+    if (perspectiva === 'minhas_tarefas')  return t.responsavel_id === uid && t.criador_id !== uid;
     // Criadas por mim → eu criei (pra mim mesmo OU pra outros — juntos)
     if (perspectiva === 'criadas_por_mim') return t.criador_id === uid;
-    return true; // 'todas'
+    return true;
   });
+
+  const countByPersp: Record<Perspectiva, number> = {
+    minhas_tarefas:  tarefas.filter(t => t.responsavel_id === user?.id && t.criador_id !== user?.id).length,
+    criadas_por_mim: tarefas.filter(t => t.criador_id === user?.id).length,
+  };
 
   // Define perspectiva de cada tarefa para coloração
   const getPerspectiva = (t: Tarefa): 'para_mim' | 'eu_para_mim' | 'eu_para_outros' => {
@@ -63,8 +67,8 @@ export function TarefasPage() {
     return 'para_mim';
   };
 
-  // Pode mover status apenas quando é o responsável pela tarefa
-  const isResponsavel = perspectiva !== 'criadas_por_mim';
+  // Permite arrastar se for responsável (o KanbanBoard já valida internamente caso seja eu_para_outros)
+  const isResponsavel = true;
   const hasFilters = search || prioridade || prazo;
 
   return (
@@ -72,7 +76,7 @@ export function TarefasPage() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Tarefas</h1>
-          <p className="page-subtitle">Visão geral de todas as suas tarefas</p>
+          <p className="page-subtitle">Visão geral de suas tarefas e atribuições</p>
         </div>
         <Button id="btn-nova-tarefa" variant="primary" onClick={() => setShowCreate(true)}>
           + Nova Tarefa
@@ -90,8 +94,8 @@ export function TarefasPage() {
             onClick={() => setPerspectiva(p.value)}
           >
             {p.label}
-            {perspectiva === p.value && tarefas.length > 0 && (
-              <span className="perspectiva-count">{tarefasFiltradas.length}</span>
+            {!loading && (
+              <span className="perspectiva-count">{countByPersp[p.value]}</span>
             )}
           </button>
         ))}
