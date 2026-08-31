@@ -132,13 +132,11 @@ export function TarefasPage() {
       </div>
 
       {/* Legenda de cores */}
-      {perspectiva === 'todas' && (
-        <div className="perspectiva-legend">
-          <span className="legend-item legend-para-mim">Para mim</span>
-          <span className="legend-item legend-eu-para-mim">Eu para mim</span>
-          <span className="legend-item legend-eu-para-outros">Eu para outros</span>
-        </div>
-      )}
+      <div className="perspectiva-legend">
+        <span className="legend-item legend-para-mim">Recebida (De outros)</span>
+        <span className="legend-item legend-eu-para-mim">Minha Tarefa (Pessoal)</span>
+        <span className="legend-item legend-eu-para-outros">Delegada (Para outros)</span>
+      </div>
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: 'var(--space-10)', color: 'var(--stone-400)' }}>
