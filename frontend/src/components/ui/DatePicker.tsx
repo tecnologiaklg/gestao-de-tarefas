@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { DayPicker } from 'react-day-picker';
 import { ptBR } from 'date-fns/locale';
 import { format, parse, isValid } from 'date-fns';
-import 'react-day-picker/dist/style.css';
+
 
 /* ── Props ─────────────────────────────────────────────────────── */
 interface Props {
@@ -258,6 +258,7 @@ export function DatePicker({
               month_grid: 'rdp-table',
               weekdays: 'rdp-head-row',
               weekday: 'rdp-head-cell',
+              weeks: 'rdp-tbody',
               week: 'rdp-row',
               day: 'rdp-cell',
               day_button: 'rdp-day',

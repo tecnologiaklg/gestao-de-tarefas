@@ -817,6 +817,14 @@ a { color: inherit; text-decoration: none; }
 .rdp-root {
   --rdp-accent-color: var(--color-primary);
   --rdp-accent-background-color: var(--color-primary-light);
+  --rdp-day-height: 34px;
+  --rdp-day-width: 34px;
+  --rdp-day_button-height: 32px;
+  --rdp-day_button-width: 32px;
+  --rdp-nav-height: 28px;
+  --rdp-nav_button-height: 26px;
+  --rdp-nav_button-width: 26px;
+  --rdp-weekday-padding: 4px 0 6px;
   font-family: var(--font-family);
   font-size: var(--font-sm);
   color: var(--stone-800);
@@ -827,141 +835,156 @@ a { color: inherit; text-decoration: none; }
 }
 
 .rdp-months {
-  display: flex;
-  gap: 0;
-  width: 100%;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .rdp-month {
-  width: 100%;
-  box-sizing: border-box;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* Caption (cabeçalho: "Setembro 2026") */
 .rdp-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px 8px;
-  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 2px 10px !important;
+  position: relative !important;
 }
 
 .rdp-caption-label {
-  font-size: var(--font-sm);
-  font-weight: 600;
-  color: var(--stone-800);
-  text-transform: capitalize;
-  letter-spacing: 0.01em;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--stone-800) !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.01em !important;
 }
 
 /* Botões de navegação de mês */
 .rdp-nav {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
 }
 
 .rdp-nav-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--stone-200);
-  background: var(--bg-surface);
-  color: var(--stone-600);
-  cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
-  padding: 0;
-  outline: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--stone-200) !important;
+  background: var(--bg-surface) !important;
+  color: var(--stone-600) !important;
+  cursor: pointer !important;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast) !important;
+  padding: 0 !important;
+  outline: none !important;
 }
 
 .rdp-nav-btn:hover {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary-soft);
-  color: var(--color-primary);
+  background: var(--color-primary-light) !important;
+  border-color: var(--color-primary-soft) !important;
+  color: var(--color-primary) !important;
 }
 
 .rdp-nav-btn:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary-soft);
+  box-shadow: 0 0 0 2px var(--color-primary-soft) !important;
 }
 
 /* Tabela de dias */
 .rdp-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  box-sizing: border-box;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Cabeçalho dos dias da semana */
 .rdp-head-row {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 2px;
+  display: table-row !important;
 }
 
 .rdp-head-cell {
-  text-align: center;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--stone-400);
-  padding: 2px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  display: table-cell !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--stone-400) !important;
+  padding: 4px 0 8px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  width: 14.2857% !important;
+  box-sizing: border-box !important;
 }
 
 /* Linhas de semana */
+.rdp-tbody {
+  display: table-row-group !important;
+}
+
 .rdp-row {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 1px;
+  display: table-row !important;
 }
 
-/* Célula de cada dia */
+/* Célula de cada dia (td) */
 .rdp-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1px;
+  display: table-cell !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 2px 0 !important;
+  width: 14.2857% !important;
+  box-sizing: border-box !important;
 }
 
-/* Botão de cada dia */
+/* Botão de cada dia (button) */
 .rdp-day {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: transparent;
-  color: var(--stone-700);
-  font-size: 12px;
-  font-family: var(--font-family);
-  cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
-  outline: none;
-  position: relative;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  margin: 0 auto !important;
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--stone-700) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  font-family: var(--font-family) !important;
+  cursor: pointer !important;
+  transition: background var(--transition-fast), color var(--transition-fast) !important;
+  outline: none !important;
+  position: relative !important;
+  box-sizing: border-box !important;
 }
 
 .rdp-day:hover:not(.rdp-day-selected):not(.rdp-day-disabled):not(.rdp-day-outside) {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  background: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
 }
 
 .rdp-day:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary-soft);
+  box-shadow: 0 0 0 2px var(--color-primary-soft) !important;
 }
 
 /* Dia de hoje */
-.rdp-day-today:not(.rdp-day-selected) {
-  font-weight: 700;
-  color: var(--color-primary);
+.rdp-day-today:not(.rdp-day-selected),
+.rdp-today:not(.rdp-selected) {
+  font-weight: 700 !important;
+  color: var(--color-primary) !important;
 }
 
-.rdp-day-today:not(.rdp-day-selected)::after {
+.rdp-day-today:not(.rdp-day-selected)::after,
+.rdp-today:not(.rdp-selected)::after {
   content: '';
   position: absolute;
   bottom: 3px;
@@ -974,33 +997,46 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Dia selecionado */
-.rdp-day-selected .rdp-day,
+.rdp-day-selected,
+.rdp-selected,
 .rdp-cell .rdp-day.rdp-day-selected {
   background: var(--color-primary) !important;
-  color: #fff !important;
-  font-weight: 600;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day-selected:hover,
+.rdp-selected:hover {
+  background: var(--color-primary-dark) !important;
+  color: #ffffff !important;
 }
 
 /* Dias fora do mês atual */
-.rdp-day-outside {
-  color: var(--stone-300);
+.rdp-day-outside,
+.rdp-outside {
+  color: var(--stone-300) !important;
+  font-weight: 400 !important;
 }
 
-.rdp-day-outside:hover {
+.rdp-day-outside:hover,
+.rdp-outside:hover {
   background: var(--stone-100) !important;
   color: var(--stone-500) !important;
 }
 
 /* Dias desabilitados */
-.rdp-day-disabled {
+.rdp-day-disabled,
+.rdp-disabled {
   color: var(--stone-300) !important;
   cursor: not-allowed !important;
-  pointer-events: none;
+  pointer-events: none !important;
+  opacity: 0.4 !important;
 }
 
 /* Oculta elementos desnecessários do react-day-picker */
-.rdp-day-hidden {
-  visibility: hidden;
+.rdp-day-hidden,
+.rdp-hidden {
+  visibility: hidden !important;
 }
 
 /* ── Integração com filter-control-wrap ───────────────────── */
