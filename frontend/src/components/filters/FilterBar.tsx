@@ -73,7 +73,6 @@ export function FilterBar({ filters, onChange }: Props) {
           <option value="NORMAL">🔵 Normal</option>
           <option value="URGENTE">🔴 Urgente</option>
         </select>
-        <span className="filter-select-chevron"><IconChevron /></span>
       </div>
 
       {/* Data */}
