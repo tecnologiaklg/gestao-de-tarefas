@@ -77,16 +77,16 @@ export function TarefasPage() {
     if (uid === null) return true;
     const respId = Number(t.responsavel_id);
     const criadorId = Number(t.criador_id);
-    // Minhas tarefas → tudo que está atribuído a mim
+    // Minhas tarefas → tudo que está sob minha responsabilidade (recebidas de outros + criadas para mim mesmo)
     if (perspectiva === 'minhas_tarefas')  return respId === uid;
-    // Criadas por mim → tudo que eu criei
-    if (perspectiva === 'criadas_por_mim') return criadorId === uid;
+    // Criadas por mim → apenas tarefas delegadas para outras pessoas
+    if (perspectiva === 'criadas_por_mim') return criadorId === uid && respId !== uid;
     return true;
   });
 
   const countByPersp: Record<Perspectiva, number> = {
     minhas_tarefas:  tarefas.filter(t => uid !== null ? Number(t.responsavel_id) === uid : true).length,
-    criadas_por_mim: tarefas.filter(t => uid !== null ? Number(t.criador_id) === uid : true).length,
+    criadas_por_mim: tarefas.filter(t => uid !== null ? (Number(t.criador_id) === uid && Number(t.responsavel_id) !== uid) : true).length,
   };
 
   // Define perspectiva de cada tarefa para coloração
