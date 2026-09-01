@@ -1,4 +1,6 @@
 
+import { FlatDatePicker } from '../ui/FlatDatePicker';
+
 interface Filters { search: string; prioridade: string; prazo: string; }
 interface Props { filters: Filters; onChange: (f: Filters) => void; }
 
@@ -82,14 +84,13 @@ export function FilterBar({ filters, onChange }: Props) {
       </div>
 
       {/* Data */}
-      <div className="filter-control-wrap filter-date-wrap" data-active={filters.prazo ? 'true' : 'false'}>
-        <input
+      <div className="filter-control-wrap filter-date-wrap" data-active={filters.prazo ? 'true' : 'false'} style={{ minWidth: 160 }}>
+        <FlatDatePicker
           id="filter-prazo"
           type="date"
-          className="filter-date-input"
           value={filters.prazo}
-          onChange={e => onChange({ ...filters, prazo: e.target.value })}
-          title="Filtrar por prazo"
+          onChange={v => onChange({ ...filters, prazo: v })}
+          placeholder="Filtrar por prazo"
         />
       </div>
 

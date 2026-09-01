@@ -312,15 +312,39 @@ docker compose down
 ```
 
 <a id="secao-root-8-3"></a>
-## 8.3 Rotina de Backup e Restauração do PostgreSQL
+## 8.3 Rotinas de Limpeza, Reset e Backup do PostgreSQL
 
-### Backup Manual (Dump SQL):
+### 🧹 Limpeza Rápida de Dados Operacionais (Truncate)
+Para limpar todas as tarefas, comentários, históricos e logs operacionais **mantendo todos os setores e usuários cadastrados**:
+
+```sql
+TRUNCATE TABLE comentarios, historico_tarefas, tarefas, logs RESTART IDENTITY CASCADE;
+```
+
+**Como executar via Terminal Docker:**
+```powershell
+docker compose exec db psql -U postgres gestao_tarefas -c "TRUNCATE TABLE comentarios, historico_tarefas, tarefas, logs RESTART IDENTITY CASCADE;"
+```
+*(Ou diretamente pelo **Console SQL** do painel Root no navegador).*
+
+### 🔄 Reset Completo do Banco (Zerar do Zero com Migrations e Seeds)
+Para recriar a estrutura do zero executando novamente os scripts `001_schema.sql` e `002_seed.sql`:
+
+```powershell
+# Derruba os containers e apaga o volume de dados
+docker compose down -v
+
+# Recria os containers com banco limpo e populado pelo seed
+docker compose up -d
+```
+
+### 💾 Backup Manual (Dump SQL):
 ```powershell
 # Gerar backup compactado do banco de dados
 docker compose exec db pg_dump -U postgres gestao_tarefas > backup_tarefas_$(Get-Date -Format 'yyyyMMdd_HHmm').sql
 ```
 
-### Restauração do Banco de Dados:
+### 📥 Restauração do Banco de Dados:
 ```powershell
 # Restaurar backup a partir de arquivo SQL
 Get-Content backup_tarefas_20260831.sql | docker compose exec -T db psql -U postgres gestao_tarefas

@@ -5,6 +5,7 @@ import { KanbanBoard } from '../components/kanban/KanbanBoard';
 import { TaskSidebar } from '../components/sidebar/TaskSidebar';
 import { CreateTaskModal } from '../components/modals/CreateTaskModal';
 import { Button } from '../components/ui/Button';
+import { FlatDatePicker } from '../components/ui/FlatDatePicker';
 import { useTarefas } from '../hooks/useTarefas';
 import { useKpis } from '../hooks/useKpis';
 import { useAuth } from '../contexts/AuthContext';
@@ -166,15 +167,13 @@ export function TarefasPage() {
         </div>
 
         {/* Data / Prazo */}
-        <div className="filter-control-wrap" data-active={prazo ? 'true' : 'false'}>
-          <span className="filter-control-icon"><IconCalendar /></span>
-          <input
+        <div className="filter-control-wrap" data-active={prazo ? 'true' : 'false'} style={{ minWidth: 160 }}>
+          <FlatDatePicker
             id="filter-prazo"
             type="date"
-            className="filter-date-input"
             value={prazo}
-            onChange={e => setPrazo(e.target.value)}
-            title="Filtrar por prazo"
+            onChange={setPrazo}
+            placeholder="Filtrar por prazo"
           />
         </div>
 

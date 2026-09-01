@@ -142,9 +142,11 @@ O sistema só solicitará o PIN e o código 2FA do Discord novamente nos seguint
 <a id="secao-4-1"></a>
 ## 4.1 Barra Lateral (Menu de Navegação)
 Localizada à esquerda da tela, oferece acesso rápido aos módulos disponíveis de acordo com seu perfil:
-- 📌 **Tarefas**: Visualização padrão de atividades sob sua responsabilidade (*Minhas Tarefas* e *Criadas por Mim*).
+- 📌 **Tarefas**: Visualização padrão de atividades organizadas em duas abas:
+  - **Minhas Tarefas**: Reúne todas as tarefas que você deve executar (demandas atribuídas a você por colegas e suas tarefas pessoais de auto-organização).
+  - **Criadas por Mim**: Reúne exclusivamente as tarefas que você delegou para outros colegas acompanharem e executarem.
 - 👥 **Minha Equipe**: Disponível exclusivamente para **Coordenadores**, exibindo o painel consolidado do departamento.
-- 🌓 **Alternador de Tema**: Alternância entre Modo Claro (Warm Stone) e Modo Escuro.
+- 🌓 **Alternador de Tema**: Alternância entre Modo Claro e Modo Escuro calibrado.
 - 🚪 **Sair**: Encerra sua sessão com segurança.
 
 <a id="secao-4-2"></a>
@@ -160,8 +162,8 @@ Cards informativos no topo da tela refletem sua carga de trabalho em tempo real:
 ## 4.3 Barra de Busca e Filtros Inteligentes
 Localizada logo abaixo das abas de perspectiva:
 - 🔍 **Busca por Texto**: Filtra cards em tempo real pelo título da tarefa.
-- 🚩 **Filtro de Prioridade**: Dropdown com opções *Todas, Baixa, Normal e Urgente*.
-- 📅 **Filtro por Prazo**: Seletor de data para localizar tarefas com vencimento específico.
+- 🚩 **Filtro de Prioridade**: Dropdown com opções *Todas prioridades, Baixa, Normal e Urgente*.
+- 📅 **Filtro por Prazo**: Campo de data nativo para localizar tarefas com vencimento específico.
 - ✕ **Limpar Filtros**: Botão visível automaticamente quando há filtros ativos para restaurar a visualização completa.
 
 ---
@@ -192,19 +194,19 @@ O sistema valida a conformidade de cada transição via *Drag & Drop*:
 
 | Origem | Destino | Permitido? | Condição / Observação |
 |---|---|:---:|---|
-| **Pendente** | **Em Andamento** | ✅ Sim | Início normal de atividade |
-| **Pendente** | **Aguardando** | ✅ Sim | Exige preenchimento de justificativa |
-| **Em Andamento** | **Aguardando** | ✅ Sim | Exige preenchimento de justificativa |
-| **Em Andamento** | **Concluída** | ✅ Sim | Finalização com registro de data/hora |
-| **Aguardando** | **Em Andamento** | ✅ Sim | Retomada dos trabalhos |
-| **Aguardando** | **Concluída** | ✅ Sim | Finalização direta |
+| **Pendente** | **Em Andamento** | ✅ Sim | Solicita confirmação de segurança antes de iniciar |
+| **Pendente** | **Aguardando** | ✅ Sim | Exige preenchimento de justificativa obrigatória |
+| **Em Andamento** | **Aguardando** | ✅ Sim | Exige preenchimento de justificativa obrigatória |
+| **Em Andamento** | **Concluída** | ✅ Sim | Solicita confirmação de segurança (ação irreversível) |
+| **Aguardando** | **Em Andamento** | ✅ Sim | Solicita confirmação de retomada dos trabalhos |
+| **Aguardando** | **Concluída** | ✅ Sim | Solicita confirmação de finalização definitiva |
 | **Concluída** | *Qualquer coluna* | ❌ Não | **Irreversível.** Não pode ser reaberta |
 
 <a id="secao-5-3"></a>
-## 5.3 Pausando Tarefas (Justificativa Obrigatória de "Aguardando")
-Ao arrastar qualquer card para a coluna **Aguardando**, o sistema abre imediatamente uma janela modal obrigatória:
-- Você deve descrever claramente o motivo do bloqueio (ex: *"Aguardando aprovação do orçamento pelo financeiro"*).
-- A justificativa é gravada no **Histórico de Auditoria** da tarefa e informada por notificação ao criador da demanda.
+## 5.3 Confirmação de Segurança e Justificativa de Pausa
+Para evitar alterações acidentais de status ao manusear o quadro:
+- **Ao mover para "Em Andamento" ou "Concluída"**: O sistema abre um modal de confirmação de segurança exibindo o título da tarefa.
+- **Ao mover para "Aguardando"**: O sistema solicita obrigatoriamente a descrição do motivo do bloqueio (ex: *"Aguardando aprovação do orçamento pelo financeiro"*). A justificativa é gravada no Histórico de Auditoria e informada aos envolvidos.
 
 <a id="secao-5-4"></a>
 ## 5.4 Conclusão Irreversível de Tarefas
@@ -236,24 +238,21 @@ Para registrar uma nova atividade, clique no botão **＋ Nova Tarefa** no topo 
 - Selecione **Para mim**.
 - O sistema preenche seu Setor e seu Nome como Responsável automaticamente nos bastidores, mantendo o formulário enxuto.
 - Informe apenas: **Título**, **Descrição** (opcional), **Prioridade**, **Data** e **Horário de Entrega**.
+- Essa tarefa aparecerá exclusivamente na sua aba **Minhas Tarefas** identificada pela etiqueta azul *Minha Tarefa (Pessoal)*.
 
 <a id="secao-6-2"></a>
 ## 6.2 Criando uma Tarefa "Para Outra Pessoa" (Delegação)
 - Selecione **Para outra pessoa**.
-- Escolha o **Setor de Destino** no dropdown moderno.
-- Selecione o **Responsável** daquele setor.
+- Escolha o **Setor de Destino** e o **Responsável** daquele setor.
 - Preencha o **Título**, a **Descrição detalhada**, o nível de **Prioridade** e o **Prazo (Data e Hora)**.
+- Essa tarefa aparecerá na sua aba **Criadas por Mim** identificada pela etiqueta *Para: [Nome do Colega]*, e aparecerá no painel do responsável em *Minhas Tarefas*.
 
 <a id="secao-6-3"></a>
-## 6.3 Seletores Modernos de Calendário e Horário
-O sistema conta com seletores modernos desenvolvidos sob medida:
-- **DatePicker (Calendário)**:
-  - Navegação fluida de meses com indicador de ano.
-  - Seleção em um clique do dia desejado.
-  - Botão de atalho **"Hoje"** para datas imediatas e **"Limpar"** para resetar.
-  - Posicionamento inteligente (abre para cima ou para baixo conforme o espaço em tela, evitando cortes).
-- **TimePicker (Horário)**:
-  - Seleção precisa em colunas organizadas de **Horas** e **Minutos** (intervalos de 10/15 minutos para agilidade operacional).
+## 6.3 Seletores de Data e Horário de Entrega (Flatpickr)
+O sistema utiliza o seletor corporativo moderno **Flatpickr** com localização nativa em Português (`pt-BR`):
+- **Data de Entrega**: Calendário interativo inteligente, com navegação de meses, indicação do dia atual e formato `DD/MM/AAAA`.
+- **Horário de Entrega**: Seletor de hora com formato 24 horas (`HH:MM`).
+- Os campos contam com ícones ilustrativos, controle dinâmico de posicionamento na tela e suporte completo ao Modo Claro e Modo Escuro.
 
 <a id="secao-6-4"></a>
 ## 6.4 Matriz Corporativa de Prioridades
@@ -269,7 +268,7 @@ O sistema conta com seletores modernos desenvolvidos sob medida:
 <a id="secao-7"></a>
 # 7. Painel de Detalhes, Auditoria e Comunicação
 
-Ao clicar em qualquer card do Kanban, abre-se a **Sidebar Lateral Direita** contendo 3 abas principais:
+Ao clicar em qualquer card do Kanban, abre-se a **Sidebar Lateral Direita** contendo as abas principais:
 
 <a id="secao-7-1"></a>
 ## 7.1 Aba "Detalhes" e Metadados
@@ -289,7 +288,7 @@ Uma linha do tempo cronológica com carimbo de data, hora e responsável por cad
 <a id="secao-7-3"></a>
 ## 7.3 Aba "Comentários" e Alertas aos Envolvidos
 - Chat interno atrelado à tarefa para alinhamento rápido de dúvidas, links ou atualizações de progresso.
-- Cada novo comentário envia uma notificação no Discord diretamente para o criador e o responsável da tarefa.
+- Cada novo comentário envia uma notificação no Discord diretamente para os demais envolvidos na tarefa.
 
 ---
 
@@ -325,7 +324,7 @@ Ao acessar **Minha Equipe**:
 <a id="secao-9"></a>
 # 9. Central de Notificações Discord e Rotinas
 
-O Bot do Portal opera 24/7 integrado ao banco de dados para garantir que nenhuma mensagem seja perdida.
+O Bot do Portal opera 24/7 integrado ao banco de dados para garantir comunicação instantânea e rastreabilidade:
 
 <a id="secao-9-1"></a>
 ## 9.1 Eventos Notificados em Tempo Real
@@ -334,15 +333,16 @@ O Bot do Portal opera 24/7 integrado ao banco de dados para garantir que nenhuma
 |---|---|---|
 | **Nova Tarefa Criada** | Responsável | Título, Criador, Prioridade e Prazo |
 | **Tarefa Editada** | Responsável | Campo alterado e novo valor |
-| **Mudança de Status** | Criador da Tarefa | Novo status (e motivo, se "Aguardando") |
-| **Novo Comentário** | Criador e Responsável | Autor e texto do comentário |
+| **Mudança de Status** | Criador da Tarefa *(exceto se foi ele próprio que alterou)* | Novo status formatado (`Pendente`, `Em Andamento`, `Aguardando`, `Concluída`) e justificativa |
+| **Novo Comentário** | Demais envolvidos | Autor e texto do comentário |
 | **Código 2FA de Login** | Usuário solicitante | Código de 6 letras para entrada no site |
 
 <a id="secao-9-2"></a>
 ## 9.2 Resumo Diário Matinal (08:00)
-Todos os dias úteis, pontualmente às **08h00**, o bot envia uma mensagem direta personalizada para cada colaborador que possua demandas ativas:
-- Quantidade de tarefas **pendentes** para o dia.
+Todos os dias úteis, pontualmente às **08h00** (horário de Brasília), o bot envia uma mensagem direta para **todos os colaboradores vinculados**:
+- Quantidade de tarefas **abertas e pendentes** para o dia.
 - Quantidade de tarefas **em andamento**.
+- Quantidade de tarefas **aguardando**.
 - Lista de tarefas **atrasadas** que necessitam de ação urgente.
 
 ---
