@@ -156,8 +156,6 @@ cron.schedule('0 8 * * 1-5', async () => {
     for (const u of usuarios) {
       try {
         const { data: kpi } = await axios.get(`${BACKEND_URL}/api/discord/resumo/${u.id}`);
-        if (kpi.abertas === 0 && kpi.atrasadas === 0 && kpi.emAndamento === 0) continue;
-
         const primeiroNome = u.nome ? u.nome.split(' ')[0] : 'colaborador';
 
         if (isSegunda) {
@@ -178,10 +176,12 @@ cron.schedule('0 8 * * 1-5', async () => {
             `• Concluídas (7d): **${kpi.concluidas7d}**`
           );
         }
-      } catch { /* ignora falha individual */ }
+      } catch (userErr) {
+        console.warn(`[bot-cron] Falha ao enviar resumo para ${u.nome ?? u.id} (${u.discord_id}):`, userErr);
+      }
     }
   } catch (err) {
-    console.error('[bot-cron] Erro ao buscar usuários:', err);
+    console.error('[bot-cron] Erro ao buscar usuários ativos:', err);
   }
 }, { timezone: 'America/Sao_Paulo' });
 
