@@ -350,7 +350,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
   gap: var(--space-3);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--stone-200);
@@ -358,70 +358,72 @@ a { color: inherit; text-decoration: none; }
 }
 
 .page-title {
-  font-size: var(--font-2xl);
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--stone-900);
   letter-spacing: -.02em;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .page-subtitle {
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   color: var(--stone-500);
-  margin-top: 3px;
+  margin-top: 2px;
   font-weight: 400;
 }
 
-/* ── KPI Cards ───────────────────────────────────────────── */
+/* ── KPI Cards (Compact & Modern) ─────────────────────────── */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
   flex-shrink: 0;
 }
 
 .kpi-card {
   background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
   border: 1px solid var(--stone-200);
-  border-left: 4px solid var(--kpi-accent, var(--stone-300));
+  border-left: 3.5px solid var(--kpi-accent, var(--stone-300));
   transition: box-shadow var(--transition-fast), transform var(--transition-fast);
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  min-height: 100px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  min-height: 44px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .kpi-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
 
+.kpi-card-info,
 .kpi-card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  gap: 8px;
+  min-width: 0;
 }
 
 .kpi-label {
-  font-size: var(--font-xs);
+  font-size: 11px;
   font-weight: 700;
   color: var(--stone-500);
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .05em;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .kpi-card .icon-wrap {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-md);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
   background: var(--kpi-bg, var(--stone-100));
   display: flex;
   align-items: center;
@@ -430,12 +432,18 @@ a { color: inherit; text-decoration: none; }
   color: var(--kpi-accent, var(--stone-500));
 }
 
+.kpi-card .icon-wrap svg {
+  width: 14px;
+  height: 14px;
+}
+
 .kpi-value {
-  font-size: 2.2rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--stone-900);
   line-height: 1;
-  letter-spacing: -.04em;
+  letter-spacing: -.03em;
+  margin-left: 8px;
 }
 
 /* ── Filtros Modernos ──────────────────────────────────────── */
@@ -444,13 +452,13 @@ a { color: inherit; text-decoration: none; }
   gap: var(--space-2);
   align-items: center;
   flex-wrap: nowrap;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
   background: var(--bg-surface);
   border: 1px solid var(--stone-200);
-  border-radius: var(--radius-lg);
-  padding: 5px var(--space-3);
+  border-radius: var(--radius-md);
+  padding: 4px var(--space-2);
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .filter-divider {
@@ -784,15 +792,17 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Popover Container (renderizado via Portal) ───────────── */
 .date-picker-popover {
-  z-index: 9999;
+  z-index: 99999;
   background: var(--bg-surface);
   border: 1px solid var(--stone-200);
   border-radius: var(--radius-xl);
   box-shadow:
     0 4px 6px -1px rgba(22, 22, 19, 0.08),
     0 10px 24px -4px rgba(22, 22, 19, 0.12);
-  padding: 12px;
-  min-width: 280px;
+  padding: 10px 12px 12px;
+  width: 280px;
+  max-width: calc(100vw - 16px);
+  box-sizing: border-box;
   animation: datepicker-in 0.12s ease-out both;
 }
 
@@ -811,15 +821,20 @@ a { color: inherit; text-decoration: none; }
   font-size: var(--font-sm);
   color: var(--stone-800);
   margin: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .rdp-months {
   display: flex;
   gap: 0;
+  width: 100%;
 }
 
 .rdp-month {
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Caption (cabeçalho: "Setembro 2026") */
@@ -827,7 +842,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px 10px;
+  padding: 0 4px 8px;
   position: relative;
 }
 
@@ -850,8 +865,8 @@ a { color: inherit; text-decoration: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: var(--radius-md);
   border: 1px solid var(--stone-200);
   background: var(--bg-surface);
@@ -877,21 +892,22 @@ a { color: inherit; text-decoration: none; }
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  box-sizing: border-box;
 }
 
 /* Cabeçalho dos dias da semana */
 .rdp-head-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .rdp-head-cell {
   text-align: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--stone-400);
-  padding: 4px 0;
+  padding: 2px 0;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -900,7 +916,7 @@ a { color: inherit; text-decoration: none; }
 .rdp-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 /* Célula de cada dia */
@@ -922,7 +938,7 @@ a { color: inherit; text-decoration: none; }
   border: none;
   background: transparent;
   color: var(--stone-700);
-  font-size: var(--font-sm);
+  font-size: 12px;
   font-family: var(--font-family);
   cursor: pointer;
   transition: background var(--transition-fast), color var(--transition-fast);
@@ -1115,7 +1131,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--stone-200);
-  max-height: calc(100vh - 290px);
+  max-height: calc(100vh - 195px);
 }
 
 .kanban-col-header {
@@ -2804,10 +2820,10 @@ a { color: inherit; text-decoration: none; }
 .perspectiva-tabs {
   display: flex;
   gap: 2px;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
   background: var(--stone-100);
-  border-radius: var(--radius-lg);
-  padding: 3px;
+  border-radius: var(--radius-md);
+  padding: 2px;
   flex-shrink: 0;
   width: fit-content;
 }
@@ -2816,9 +2832,9 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 5px var(--space-4);
-  border-radius: var(--radius-md);
-  font-size: var(--font-sm);
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-xs);
   font-weight: 500;
   color: var(--stone-500);
   background: none;

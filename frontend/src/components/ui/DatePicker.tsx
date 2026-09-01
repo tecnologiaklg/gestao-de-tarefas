@@ -78,7 +78,14 @@ interface PopoverProps {
 
 function CalendarPopover({ triggerRef, onClose, children }: PopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState<React.CSSProperties>({ visibility: 'hidden', position: 'fixed' });
+  const [style, setStyle] = useState<React.CSSProperties>({
+    visibility: 'hidden',
+    position: 'fixed',
+    width: 280,
+    maxWidth: 'calc(100vw - 16px)',
+    boxSizing: 'border-box',
+    zIndex: 99999,
+  });
 
   // Calcula posição ideal após montar
   useEffect(() => {
@@ -90,25 +97,38 @@ function CalendarPopover({ triggerRef, onClose, children }: PopoverProps) {
     const pr = popover.getBoundingClientRect();
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+    const popWidth = Math.min(280, vw - 16);
+    const popHeight = pr.height || 300;
     const GAP = 6;
     const MARGIN = 8;
 
     // Vertical: prefere abaixo; se não cabe, abre acima
     let top: number;
-    if (tr.bottom + GAP + pr.height <= vh - MARGIN) {
+    if (tr.bottom + GAP + popHeight <= vh - MARGIN) {
       top = tr.bottom + GAP;
+    } else if (tr.top - GAP - popHeight >= MARGIN) {
+      top = tr.top - GAP - popHeight;
     } else {
-      top = tr.top - GAP - pr.height;
+      top = Math.max(MARGIN, (vh - popHeight) / 2);
     }
 
     // Horizontal: alinha à esquerda do trigger; ajusta se ultrapassar
     let left = tr.left;
-    if (left + pr.width > vw - MARGIN) {
-      left = vw - MARGIN - pr.width;
+    if (left + popWidth > vw - MARGIN) {
+      left = Math.max(MARGIN, vw - MARGIN - popWidth);
     }
     if (left < MARGIN) left = MARGIN;
 
-    setStyle({ position: 'fixed', top, left, visibility: 'visible' });
+    setStyle({
+      position: 'fixed',
+      top,
+      left,
+      width: popWidth,
+      maxWidth: 'calc(100vw - 16px)',
+      boxSizing: 'border-box',
+      zIndex: 99999,
+      visibility: 'visible',
+    });
   }, [triggerRef]);
 
   // Fecha ao clicar fora, pressionar ESC ou scrollar

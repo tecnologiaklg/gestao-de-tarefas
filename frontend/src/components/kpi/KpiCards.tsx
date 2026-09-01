@@ -54,11 +54,11 @@ export function KpiCards({ kpis, loading }: Props) {
           className="kpi-card"
           style={{ '--kpi-accent': accent, '--kpi-bg': bg } as React.CSSProperties}
         >
-          <div className="kpi-card-header">
-            <span className="kpi-label">{label}</span>
+          <div className="kpi-card-info">
             <div className="icon-wrap">
               <Icon />
             </div>
+            <span className="kpi-label">{label}</span>
           </div>
           <div className="kpi-value">{loading ? '—' : kpis[key]}</div>
         </div>
