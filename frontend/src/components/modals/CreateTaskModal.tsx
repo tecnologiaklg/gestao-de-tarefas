@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
-import { CustomSelect } from '../ui/CustomSelect';
-import { DatePicker } from '../ui/DatePicker';
-import { TimePicker } from '../ui/TimePicker';
 import { ConfirmCreateModal } from './ConfirmCreateModal';
 import { PriorityHelpModal } from './PriorityHelpModal';
 import { useSetores } from '../../hooks/useData';
@@ -307,27 +304,31 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                     <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
                       Setor <span className="required">*</span>
                     </label>
-                    <CustomSelect
+                    <select
                       id="task-setor"
+                      className="form-select"
                       value={form.setor_id}
-                      onChange={handleSetorChange}
-                      options={setorOptions}
-                      placeholder="Selecione…"
-                    />
+                      onChange={e => handleSetorChange(e.target.value)}
+                    >
+                      <option value="">Selecione…</option>
+                      {setores.map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}
+                    </select>
                   </div>
 
                   <div className="form-group">
                     <label className="form-label" style={{ fontSize: 'var(--font-xs)' }}>
                       Responsável <span className="required">*</span>
                     </label>
-                    <CustomSelect
+                    <select
                       id="task-responsavel"
+                      className="form-select"
                       value={form.responsavel_id}
-                      onChange={v => setForm(f => ({ ...f, responsavel_id: v }))}
-                      options={responsavelOptions}
-                      placeholder="Selecione…"
+                      onChange={set('responsavel_id')}
                       disabled={!form.setor_id}
-                    />
+                    >
+                      <option value="">Selecione…</option>
+                      {responsaveis.map(r => <option key={r.id} value={r.id}>{r.nome} ({r.cargo})</option>)}
+                    </select>
                   </div>
                 </div>
               )}
@@ -348,12 +349,16 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                       <IconHelp /><span>Guia</span>
                     </button>
                   </div>
-                  <CustomSelect
+                  <select
                     id="task-prioridade"
+                    className="form-select"
                     value={form.prioridade}
-                    onChange={v => setForm(f => ({ ...f, prioridade: v }))}
-                    options={prioridadeOptions}
-                  />
+                    onChange={set('prioridade')}
+                  >
+                    <option value="BAIXA">🟢 Baixa</option>
+                    <option value="NORMAL">🔵 Normal</option>
+                    <option value="URGENTE">🔴 Urgente</option>
+                  </select>
                 </div>
 
                 {/* Prazo */}
@@ -362,15 +367,21 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                     Prazo de Entrega <span className="required">*</span>
                   </label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 6 }}>
-                    <DatePicker
+                    <input
                       id="task-data"
+                      type="date"
+                      className="form-input"
                       value={form.data}
-                      onChange={v => setForm(f => ({ ...f, data: v }))}
+                      onChange={set('data')}
+                      style={{ padding: '6px 8px' }}
                     />
-                    <TimePicker
+                    <input
                       id="task-hora"
+                      type="time"
+                      className="form-input"
                       value={form.hora}
-                      onChange={v => setForm(f => ({ ...f, hora: v }))}
+                      onChange={set('hora')}
+                      style={{ padding: '6px 8px' }}
                     />
                   </div>
                 </div>

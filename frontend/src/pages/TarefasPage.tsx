@@ -5,8 +5,6 @@ import { KanbanBoard } from '../components/kanban/KanbanBoard';
 import { TaskSidebar } from '../components/sidebar/TaskSidebar';
 import { CreateTaskModal } from '../components/modals/CreateTaskModal';
 import { Button } from '../components/ui/Button';
-import { CustomSelect } from '../components/ui/CustomSelect';
-import { DatePicker } from '../components/ui/DatePicker';
 import { useTarefas } from '../hooks/useTarefas';
 import { useKpis } from '../hooks/useKpis';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,6 +33,26 @@ function IconClose() {
   );
 }
 
+function IconFlag() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+      <line x1="4" y1="22" x2="4" y2="15" />
+    </svg>
+  );
+}
+
+function IconCalendar() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
 export function TarefasPage() {
   const { user } = useAuth();
   const [perspectiva, setPerspectiva] = useState<Perspectiva>('minhas_tarefas');
@@ -52,26 +70,32 @@ export function TarefasPage() {
   const { tarefas, setTarefas, loading, refetch } = useTarefas('todas', params);
   const { kpis, loading: kpiLoading }             = useKpis('usuario');
 
-  // Filtra por perspectiva no client
+  const uid = user?.id != null ? Number(user.id) : null;
+
+  // Filtra por perspectiva no client com coerção segura de tipo
   const tarefasFiltradas = tarefas.filter(t => {
-    const uid = user?.id;
-    // Minhas tarefas → tudo que está atribuído a mim (eu sou o responsável, inclusive tarefas próprias)
-    if (perspectiva === 'minhas_tarefas')  return t.responsavel_id === uid;
-    // Criadas por mim → tudo que eu criei (para mim ou para outros)
-    if (perspectiva === 'criadas_por_mim') return t.criador_id === uid;
+    if (uid === null) return true;
+    const respId = Number(t.responsavel_id);
+    const criadorId = Number(t.criador_id);
+    // Minhas tarefas → tudo que está atribuído a mim
+    if (perspectiva === 'minhas_tarefas')  return respId === uid;
+    // Criadas por mim → tudo que eu criei
+    if (perspectiva === 'criadas_por_mim') return criadorId === uid;
     return true;
   });
 
   const countByPersp: Record<Perspectiva, number> = {
-    minhas_tarefas:  tarefas.filter(t => t.responsavel_id === user?.id).length,
-    criadas_por_mim: tarefas.filter(t => t.criador_id === user?.id).length,
+    minhas_tarefas:  tarefas.filter(t => uid !== null ? Number(t.responsavel_id) === uid : true).length,
+    criadas_por_mim: tarefas.filter(t => uid !== null ? Number(t.criador_id) === uid : true).length,
   };
 
   // Define perspectiva de cada tarefa para coloração
   const getPerspectiva = (t: Tarefa): 'para_mim' | 'eu_para_mim' | 'eu_para_outros' => {
-    const uid = user?.id;
-    if (t.criador_id === uid && t.responsavel_id === uid) return 'eu_para_mim';
-    if (t.criador_id === uid) return 'eu_para_outros';
+    if (uid === null) return 'para_mim';
+    const respId = Number(t.responsavel_id);
+    const criadorId = Number(t.criador_id);
+    if (criadorId === uid && respId === uid) return 'eu_para_mim';
+    if (criadorId === uid) return 'eu_para_outros';
     return 'para_mim';
   };
 
@@ -108,7 +132,7 @@ export function TarefasPage() {
         ))}
       </div>
 
-      {/* Barra de busca/filtros moderna */}
+      {/* Barra de busca/filtros */}
       <div className="filter-bar">
         <div className="filter-search">
           <span className="search-icon"><SearchIcon /></span>
@@ -125,28 +149,32 @@ export function TarefasPage() {
 
         <div className="filter-divider" />
 
-        {/* Prioridade — CustomSelect */}
-        <div className="filter-control-wrap filter-select-wrap" data-active={prioridade ? 'true' : 'false'}>
-          <CustomSelect
+        {/* Prioridade */}
+        <div className="filter-control-wrap" data-active={prioridade ? 'true' : 'false'}>
+          <span className="filter-control-icon"><IconFlag /></span>
+          <select
             id="filter-prioridade"
+            className="filter-select"
             value={prioridade}
-            onChange={setPrioridade}
-            options={[
-              { value: '', label: 'Todas prioridades' },
-              { value: 'BAIXA', label: '🟢 Baixa' },
-              { value: 'NORMAL', label: '🔵 Normal' },
-              { value: 'URGENTE', label: '🔴 Urgente' },
-            ]}
-          />
+            onChange={e => setPrioridade(e.target.value)}
+          >
+            <option value="">Todas prioridades</option>
+            <option value="BAIXA">🟢 Baixa</option>
+            <option value="NORMAL">🔵 Normal</option>
+            <option value="URGENTE">🔴 Urgente</option>
+          </select>
         </div>
 
-        {/* Data — DatePicker customizado */}
-        <div className="filter-control-wrap filter-date-wrap" data-active={prazo ? 'true' : 'false'}>
-          <DatePicker
+        {/* Data / Prazo */}
+        <div className="filter-control-wrap" data-active={prazo ? 'true' : 'false'}>
+          <span className="filter-control-icon"><IconCalendar /></span>
+          <input
             id="filter-prazo"
+            type="date"
+            className="filter-date-input"
             value={prazo}
-            onChange={setPrazo}
-            placeholder="Filtrar por prazo"
+            onChange={e => setPrazo(e.target.value)}
+            title="Filtrar por prazo"
           />
         </div>
 
