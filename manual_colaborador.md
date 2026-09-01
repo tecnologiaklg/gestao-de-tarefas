@@ -223,14 +223,14 @@ Quando uma tarefa é movida para **Concluída**:
 Para registrar uma nova atividade, clique no botão **＋ Nova Tarefa** no topo direito da tela. Uma janela interativa perguntará a finalidade:
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                 Essa tarefa é para quem?                 │
-│                                                          │
-│     ┌──────────────────────┐    ┌──────────────────────┐ │
-│     │     👤 PARA MIM      │    │  👥 PARA OUTRA PESSOA│ │
-│     │ (Organização própria)│    │   (Delegar a colega) │ │
-│     └──────────────────────┘    └──────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│                  Essa tarefa é para quem?                  │
+│                                                            │
+│    ┌──────────────────────┐    ┌──────────────────────┐    │
+│    │       PARA MIM       │    │  PARA OUTRA PESSOA   │    │
+│    │ (Organização própria)│    │  (Delegar a colega)  │    │
+│    └──────────────────────┘    └──────────────────────┘    │
+└────────────────────────────────────────────────────────────┘
 ```
 
 <a id="secao-6-1"></a>
@@ -248,8 +248,8 @@ Para registrar uma nova atividade, clique no botão **＋ Nova Tarefa** no topo 
 - Essa tarefa aparecerá na sua aba **Criadas por Mim** identificada pela etiqueta *Para: [Nome do Colega]*, e aparecerá no painel do responsável em *Minhas Tarefas*.
 
 <a id="secao-6-3"></a>
-## 6.3 Seletores de Data e Horário de Entrega (Flatpickr)
-O sistema utiliza o seletor corporativo moderno **Flatpickr** com localização nativa em Português (`pt-BR`):
+## 6.3 Seletores Modernos de Data e Horário de Entrega
+O sistema utiliza seletores corporativos modernos com localização nativa em Português (`pt-BR`):
 - **Data de Entrega**: Calendário interativo inteligente, com navegação de meses, indicação do dia atual e formato `DD/MM/AAAA`.
 - **Horário de Entrega**: Seletor de hora com formato 24 horas (`HH:MM`).
 - Os campos contam com ícones ilustrativos, controle dinâmico de posicionamento na tela e suporte completo ao Modo Claro e Modo Escuro.
@@ -355,14 +355,14 @@ Todos os dias úteis, pontualmente às **08h00** (horário de Brasília), o bot 
 ║                      DIRETRIZES FUNDAMENTAIS DO PORTAL                    ║
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║ 1. TAREFAS SÃO IMUTÁVEIS: Nenhuma tarefa pode ser excluída do sistema.    ║
-║    Mesmo demandas canceladas devem ser documentadas via status/histórico.║
+║    Mesmo demandas canceladas devem ser documentadas via status/histórico. ║
 ║                                                                           ║
 ║ 2. CONCLUSÃO DEFINITIVA: Uma tarefa concluída nunca pode ser reaberta.    ║
 ║    Caso haja novo trabalho correlato, cria-se uma nova tarefa de follow-up║
 ║                                                                           ║
 ║ 3. AUDITORIA TOTAL: Toda ação gera log com IP, data, hora e autor.        ║
 ║                                                                           ║
-║ 4. SIGILO DE ACESSO: Seu PIN de 6 dígitos é individual e intransferível. ║
+║ 4. SIGILO DE ACESSO: Seu PIN de 6 dígitos é individual e intransferível.  ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
