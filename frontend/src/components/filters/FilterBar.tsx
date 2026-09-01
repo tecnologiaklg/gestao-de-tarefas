@@ -1,4 +1,3 @@
-import { DatePicker } from '../ui/DatePicker';
 
 interface Filters { search: string; prioridade: string; prazo: string; }
 interface Props { filters: Filters; onChange: (f: Filters) => void; }
@@ -82,13 +81,15 @@ export function FilterBar({ filters, onChange }: Props) {
         <span className="filter-select-chevron"><IconChevron /></span>
       </div>
 
-      {/* Data — DatePicker customizado */}
+      {/* Data */}
       <div className="filter-control-wrap filter-date-wrap" data-active={filters.prazo ? 'true' : 'false'}>
-        <DatePicker
+        <input
           id="filter-prazo"
+          type="date"
+          className="filter-date-input"
           value={filters.prazo}
-          onChange={v => onChange({ ...filters, prazo: v })}
-          placeholder="Filtrar por prazo"
+          onChange={e => onChange({ ...filters, prazo: e.target.value })}
+          title="Filtrar por prazo"
         />
       </div>
 
