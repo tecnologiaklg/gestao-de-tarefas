@@ -3193,11 +3193,33 @@ a { color: inherit; text-decoration: none; }
   padding-top: 6px !important;
 }
 
-.flatpickr-current-month select,
-.flatpickr-current-month .numInputWrapper input {
-  background: rgba(255, 255, 255, 0.18) !important;
+/* Desabilita dropdown de mês/ano — navegar pelas setas apenas */
+.flatpickr-current-month .flatpickr-monthDropdownContainer,
+.flatpickr-current-month select.flatpickr-monthDropdownMenu,
+.flatpickr-monthDropdownContainer select {
+  pointer-events: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
   color: #fff !important;
-  border-radius: 5px !important;
+  border: none !important;
+  cursor: default !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-family) !important;
+  padding: 0 !important;
+}
+.flatpickr-current-month .numInputWrapper input {
+  pointer-events: none !important;
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-family) !important;
+}
+.flatpickr-current-month .numInputWrapper span {
+  display: none !important;
 }
 
 .flatpickr-months .flatpickr-prev-month,

@@ -74,6 +74,8 @@ export function FlatDatePicker({
       time_24hr: true,
       disableMobile: true,
       allowInput: false,
+      // Desabilita dropdown de mês/ano - navegar apenas pelas setas
+      showMonths: 1,
       onChange(selectedDates, dateStr) {
         if (isTime) {
           onChange(dateStr);
