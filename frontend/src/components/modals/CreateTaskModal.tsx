@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/Button';
-import { FlatDatePicker } from '../ui/FlatDatePicker';
+import { DatePicker } from '../ui/DatePicker';
+import { TimePicker } from '../ui/TimePicker';
 import { ConfirmCreateModal } from './ConfirmCreateModal';
 import { PriorityHelpModal } from './PriorityHelpModal';
 import { useSetores } from '../../hooks/useData';
@@ -360,16 +361,14 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                     Prazo de Entrega <span className="required">*</span>
                   </label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 6 }}>
-                    <FlatDatePicker
+                    <DatePicker
                       id="task-data"
-                      type="date"
                       value={form.data}
                       onChange={v => setForm(f => ({ ...f, data: v }))}
                       placeholder="dd/mm/aaaa"
                     />
-                    <FlatDatePicker
+                    <TimePicker
                       id="task-hora"
-                      type="time"
                       value={form.hora}
                       onChange={v => setForm(f => ({ ...f, hora: v }))}
                       placeholder="18:00"

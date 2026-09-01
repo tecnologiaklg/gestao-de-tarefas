@@ -1,5 +1,5 @@
 
-import { FlatDatePicker } from '../ui/FlatDatePicker';
+import { DatePicker } from '../ui/DatePicker';
 
 interface Filters { search: string; prioridade: string; prazo: string; }
 interface Props { filters: Filters; onChange: (f: Filters) => void; }
@@ -37,13 +37,6 @@ function IconClose() {
     </svg>
   );
 }
-
-const PRIORIDADE_LABELS: Record<string, string> = {
-  '': 'Todas prioridades',
-  'BAIXA': '🟢 Baixa',
-  'NORMAL': '🔵 Normal',
-  'URGENTE': '🔴 Urgente',
-};
 
 export function FilterBar({ filters, onChange }: Props) {
   const hasFilters = Boolean(filters.search || filters.prioridade || filters.prazo);
@@ -84,10 +77,9 @@ export function FilterBar({ filters, onChange }: Props) {
       </div>
 
       {/* Data */}
-      <div className="filter-control-wrap filter-date-wrap" data-active={filters.prazo ? 'true' : 'false'} style={{ minWidth: 160 }}>
-        <FlatDatePicker
+      <div className="filter-control-wrap filter-date-wrap" data-active={filters.prazo ? 'true' : 'false'} style={{ minWidth: 176 }}>
+        <DatePicker
           id="filter-prazo"
-          type="date"
           value={filters.prazo}
           onChange={v => onChange({ ...filters, prazo: v })}
           placeholder="Filtrar por prazo"
