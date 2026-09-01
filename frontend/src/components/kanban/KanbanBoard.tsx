@@ -46,10 +46,20 @@ export function KanbanBoard({ tarefas, setTarefas, onCardClick, isResponsavel, g
     setActiveId(null);
     if (!over || !isResponsavel) return;
 
-    const tarefa    = tarefas.find(t => t.id === active.id)!;
-    const newStatus = over.id as Status;
+    const tarefa = tarefas.find(t => t.id === active.id);
+    if (!tarefa) return;
 
-    if (!STATUSES.includes(newStatus) || newStatus === tarefa.status) return;
+    let newStatus: Status | null = null;
+    if (STATUSES.includes(over.id as Status)) {
+      newStatus = over.id as Status;
+    } else {
+      const overTarefa = tarefas.find(t => t.id === over.id);
+      if (overTarefa) {
+        newStatus = overTarefa.status;
+      }
+    }
+
+    if (!newStatus || newStatus === tarefa.status) return;
     if (!ALLOWED[tarefa.status]?.includes(newStatus)) return;
 
     // Bloquear mover se for "criada para outros" (criador não move)

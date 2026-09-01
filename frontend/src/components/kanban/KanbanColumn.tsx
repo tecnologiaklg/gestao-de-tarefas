@@ -57,6 +57,7 @@ export function KanbanColumn({ status, tarefas, onCardClick, getPerspectiva }: P
 
   return (
     <div
+      ref={setNodeRef}
       className="kanban-column"
       style={{ '--col-accent': cfg.accent } as React.CSSProperties}
     >
@@ -70,7 +71,6 @@ export function KanbanColumn({ status, tarefas, onCardClick, getPerspectiva }: P
 
       <SortableContext items={tarefas.map(t => t.id)} strategy={verticalListSortingStrategy}>
         <div
-          ref={setNodeRef}
           className="kanban-col-body"
           style={isOver ? { background: 'var(--color-primary-light)' } : undefined}
         >
