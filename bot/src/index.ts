@@ -46,6 +46,24 @@ const client = new Client({
   ],
 });
 
+// ── Definição dos Comandos Slash ───────────────────────────────────────────────
+const slashCommands = [
+  new SlashCommandBuilder()
+    .setName('vincular')
+    .setDescription('Vincular seu PIN ao Portal de Tarefas')
+    .addStringOption(option =>
+      option
+        .setName('pin')
+        .setDescription('Seu PIN pessoal de 6 dígitos numéricos')
+        .setRequired(true)
+        .setMinLength(6)
+        .setMaxLength(6)
+    ),
+  new SlashCommandBuilder()
+    .setName('resumo')
+    .setDescription('Consultar o resumo das suas tarefas atuais no portal'),
+];
+
 // ── Funções auxiliares ─────────────────────────────────────────────────────────
 
 async function sendDM(discordId: string, text: string): Promise<boolean> {
@@ -74,7 +92,7 @@ async function processarVinculo(pin: string, discordId: string, replyFn: (text: 
 
   if (!pin || !/^\d{6}$/.test(pin)) {
     return replyFn(
-      '❌ **Formato inválido!**\nUse: `/vincular <PIN>`\nExemplo: `/vincular 123456`\n_(6 dígitos numéricos fornecidos pelo administrador)_'
+      '❌ **Formato inválido!**\nUse: `/vincular <PIN>` ou envie apenas os 6 dígitos.\nExemplo: `/vincular 123456`\n_(6 dígitos numéricos fornecidos pelo administrador)_'
     );
   }
 
@@ -106,7 +124,50 @@ async function processarVinculo(pin: string, discordId: string, replyFn: (text: 
   }
 }
 
-// ── 1. Resposta a Mensagens de Texto (Exclusivo em DM Privada) ─────────────────
+// ── 1. Interações via Slash Commands (/vincular, /resumo) ──────────────────────
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const { commandName, user } = interaction;
+
+  // Responde imediatamente (defer) para o Discord não dar timeout ("aplicativo não respondeu")
+  try {
+    await interaction.deferReply({ ephemeral: true });
+  } catch (deferErr) {
+    console.warn('[bot] Erro ao dar deferReply:', deferErr);
+  }
+
+  if (commandName === 'vincular') {
+    const pin = interaction.options.getString('pin', true).trim();
+    await processarVinculo(pin, user.id, async (text) => {
+      await interaction.editReply(text);
+    });
+    return;
+  }
+
+  if (commandName === 'resumo') {
+    try {
+      const { data: usuario } = await axios.get(`${BACKEND_URL}/api/discord/usuario-por-discord/${user.id}`);
+      if (!usuario || !usuario.id) {
+        await interaction.editReply('❌ Sua conta ainda não está vinculada. Use `/vincular <PIN>` para vincular.');
+        return;
+      }
+      const { data: kpi } = await axios.get(`${BACKEND_URL}/api/discord/resumo/${usuario.id}`);
+      await interaction.editReply(
+        `📊 **Resumo de Tarefas — ${usuario.nome}**\n\n` +
+        `• Abertas: **${kpi.abertas}**\n` +
+        `• Em andamento: **${kpi.emAndamento}**\n` +
+        `• Aguardando: **${kpi.aguardando}**\n` +
+        `• Atrasadas: **${kpi.atrasadas}**\n` +
+        `• Concluídas nos últimos 7 dias: **${kpi.concluidas7d}**`
+      );
+    } catch (err) {
+      await interaction.editReply('❌ Não foi possível buscar seu resumo. Verifique se sua conta está vinculada.');
+    }
+  }
+});
+
+// ── 2. Resposta a Mensagens de Texto Diretas (DM Privada) ─────────────────────
 client.on(Events.MessageCreate, async (msg: Message) => {
   if (msg.author.bot) return;
 
@@ -117,7 +178,6 @@ client.on(Events.MessageCreate, async (msg: Message) => {
 
   const content = msg.content.trim();
 
-  // Em mensagem privada (DM):
   // Caso A: Usuário enviou apenas o PIN de 6 dígitos direto
   if (/^\d{6}$/.test(content)) {
     await processarVinculo(content, msg.author.id, async (text) => {
@@ -126,7 +186,7 @@ client.on(Events.MessageCreate, async (msg: Message) => {
     return;
   }
 
-  // Caso B: Usuário enviou com prefixo /vincular, !vincular ou vincular
+  // Caso B: Usuário enviou com prefixo /vincular, !vincular ou vincular como texto
   if (content.startsWith('/vincular') || content.startsWith('!vincular') || content.toLowerCase().startsWith('vincular')) {
     const parts = content.split(/\s+/);
     const pin = parts[1] ?? '';
@@ -138,7 +198,7 @@ client.on(Events.MessageCreate, async (msg: Message) => {
 
   // Caso C: Qualquer outra mensagem em DM recebe orientação rápida
   await msg.reply(
-    'Para vincular sua conta ao Portal de Tarefas, envie apenas o seu **PIN de 6 dígitos** aqui no chat privado.'
+    'Para vincular sua conta ao Portal de Tarefas, envie o comando `/vincular` ou digite apenas o seu **PIN de 6 dígitos** aqui no chat privado.'
   );
 });
 
@@ -207,12 +267,25 @@ client.once(Events.ClientReady, async () => {
   console.log(`[bot] Conectado ao Discord com sucesso como: ${client.user?.tag} (ID: ${client.user?.id})`);
 
   if (client.user) {
-    // Define status como Online e atividade personalizada
     client.user.setPresence({
       status: 'online',
       activities: [{ name: 'Portal de Tarefas 📋', type: ActivityType.Watching }],
     });
+
+    // Registra os Slash Commands globalmente na API do Discord
+    try {
+      console.log('[bot] Registrando comandos Slash no Discord...');
+      const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
+      await rest.put(
+        Routes.applicationCommands(client.user.id),
+        { body: slashCommands.map(c => c.toJSON()) }
+      );
+      console.log('[bot] Comandos Slash (/vincular, /resumo) registrados com sucesso!');
+    } catch (cmdErr) {
+      console.error('[bot] Erro ao registrar comandos Slash:', cmdErr);
+    }
   }
+
   app.listen(BOT_PORT, () => console.log(`[bot-http] Servidor de notificações ouvindo na porta ${BOT_PORT}`));
 });
 
