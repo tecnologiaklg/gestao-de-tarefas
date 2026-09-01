@@ -55,15 +55,15 @@ export function TarefasPage() {
   // Filtra por perspectiva no client
   const tarefasFiltradas = tarefas.filter(t => {
     const uid = user?.id;
-    // Minhas tarefas → outros criaram pra mim (eu sou responsável mas não criador)
-    if (perspectiva === 'minhas_tarefas')  return t.responsavel_id === uid && t.criador_id !== uid;
-    // Criadas por mim → eu criei (pra mim mesmo OU pra outros — juntos)
+    // Minhas tarefas → tudo que está atribuído a mim (eu sou o responsável, inclusive tarefas próprias)
+    if (perspectiva === 'minhas_tarefas')  return t.responsavel_id === uid;
+    // Criadas por mim → tudo que eu criei (para mim ou para outros)
     if (perspectiva === 'criadas_por_mim') return t.criador_id === uid;
     return true;
   });
 
   const countByPersp: Record<Perspectiva, number> = {
-    minhas_tarefas:  tarefas.filter(t => t.responsavel_id === user?.id && t.criador_id !== user?.id).length,
+    minhas_tarefas:  tarefas.filter(t => t.responsavel_id === user?.id).length,
     criadas_por_mim: tarefas.filter(t => t.criador_id === user?.id).length,
   };
 
