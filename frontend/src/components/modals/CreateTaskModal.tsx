@@ -210,14 +210,6 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
     );
   }
 
-  const setorOptions = setores.map(s => ({ value: String(s.id), label: s.nome }));
-  const responsavelOptions = usuarios.map(u => ({ value: String(u.id), label: u.nome ?? '' }));
-  const prioridadeOptions = [
-    { value: 'BAIXA', label: '🟢 Baixa' },
-    { value: 'NORMAL', label: '🔵 Normal' },
-    { value: 'URGENTE', label: '🔴 Urgente' },
-  ];
-
   // Step 1 — formulário
   return (
     <>
@@ -327,7 +319,7 @@ export function CreateTaskModal({ onClose, onCreated }: Props) {
                       disabled={!form.setor_id}
                     >
                       <option value="">Selecione…</option>
-                      {responsaveis.map(r => <option key={r.id} value={r.id}>{r.nome} ({r.cargo})</option>)}
+                      {usuarios.map(r => <option key={r.id} value={r.id}>{r.nome} ({r.cargo})</option>)}
                     </select>
                   </div>
                 </div>
