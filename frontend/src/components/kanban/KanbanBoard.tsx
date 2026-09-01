@@ -8,6 +8,7 @@ import { KanbanColumn } from './KanbanColumn';
 import { TaskCard } from './TaskCard';
 import { tarefaService } from '../../services/tarefaService';
 import { WaitingReasonModal } from '../modals/WaitingReasonModal';
+import { ConfirmStatusModal } from '../modals/ConfirmStatusModal';
 
 const STATUSES: Status[] = ['PENDENTE', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDA'];
 
@@ -32,6 +33,7 @@ export function KanbanBoard({ tarefas, setTarefas, onCardClick, isResponsavel, g
   const [activeId, setActiveId]           = useState<number | null>(null);
   const [waitingModal, setWaitingModal]   = useState<{ tarefaId: number; targetStatus: Status } | null>(null);
   const [pendingDrop, setPendingDrop]     = useState<{ tarefaId: number; from: Status; to: Status } | null>(null);
+  const [confirmModal, setConfirmModal]   = useState<{ tarefaId: number; from: Status; to: 'EM_ANDAMENTO' | 'CONCLUIDA'; titulo: string } | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -59,6 +61,11 @@ export function KanbanBoard({ tarefas, setTarefas, onCardClick, isResponsavel, g
       return;
     }
 
+    if (newStatus === 'EM_ANDAMENTO' || newStatus === 'CONCLUIDA') {
+      setConfirmModal({ tarefaId: tarefa.id, from: tarefa.status, to: newStatus as 'EM_ANDAMENTO' | 'CONCLUIDA', titulo: tarefa.titulo });
+      return;
+    }
+
     await applyStatusChange(tarefa.id, tarefa.status, newStatus);
   };
 
@@ -82,6 +89,12 @@ export function KanbanBoard({ tarefas, setTarefas, onCardClick, isResponsavel, g
   const handleWaitingCancel = () => {
     setWaitingModal(null);
     setPendingDrop(null);
+  };
+
+  const handleConfirmStatus = async () => {
+    if (!confirmModal) return;
+    setConfirmModal(null);
+    await applyStatusChange(confirmModal.tarefaId, confirmModal.from, confirmModal.to);
   };
 
   return (
@@ -112,6 +125,15 @@ export function KanbanBoard({ tarefas, setTarefas, onCardClick, isResponsavel, g
         <WaitingReasonModal
           onConfirm={handleWaitingConfirm}
           onCancel={handleWaitingCancel}
+        />
+      )}
+
+      {confirmModal && (
+        <ConfirmStatusModal
+          targetStatus={confirmModal.to}
+          tarefaTitulo={confirmModal.titulo}
+          onConfirm={handleConfirmStatus}
+          onCancel={() => setConfirmModal(null)}
         />
       )}
     </>

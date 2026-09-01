@@ -24,6 +24,16 @@ function formatDate(d: string | null | undefined): string {
   return new Date(d).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 }
 
+function formatStatus(s: string): string {
+  const map: Record<string, string> = {
+    PENDENTE:     'Pendente',
+    EM_ANDAMENTO: 'Em Andamento',
+    AGUARDANDO:   'Aguardando',
+    CONCLUIDA:    'Concluída',
+  };
+  return map[s] ?? s;
+}
+
 export const DiscordNotificationService = {
   notificarCriacao: async (tarefa: Tarefa, _criadorUser: JWTPayloadUser): Promise<void> => {
     await enviarDM(tarefa.criador_id,
@@ -46,10 +56,12 @@ export const DiscordNotificationService = {
     await enviarDM(tarefa.responsavel_id, `✏️ **Tarefa atualizada:** ${tarefa.titulo}\n${linhas}`);
   },
 
-  notificarMudancaStatus: async (tarefa: Tarefa, _responsavelUser: JWTPayloadUser, statusAntes: string, motivo?: string | null): Promise<void> => {
+  notificarMudancaStatus: async (tarefa: Tarefa, autorUser: JWTPayloadUser, statusAntes: string, motivo?: string | null): Promise<void> => {
+    // Não notificar quem executou a ação sobre o que ele mesmo fez
+    if (tarefa.criador_id === autorUser.id) return;
     const motMsg = motivo ? `\n📝 Motivo: ${motivo}` : '';
     await enviarDM(tarefa.criador_id,
-      `🔄 **Status alterado:** ${tarefa.titulo}\n${statusAntes} → **${tarefa.status}**${motMsg}`
+      `🔄 **Status alterado:** ${tarefa.titulo}\n${formatStatus(statusAntes)} → **${formatStatus(tarefa.status)}**${motMsg}`
     );
   },
 
