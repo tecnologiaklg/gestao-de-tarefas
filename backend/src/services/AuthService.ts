@@ -1,6 +1,5 @@
 // services/AuthService.ts
 import jwt from 'jsonwebtoken';
-import axios from 'axios';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
 import { LogRepository } from '../repositories/LogRepository';
 import { UnauthorizedError, ForbiddenError } from '../errors/AppError';
@@ -56,33 +55,17 @@ export const AuthService = {
       };
     }
 
-    // CASO 2 — Discord já vinculado → envia código de confirmação por DM
-    // (ocorre sempre que não há JWT válido — novo dispositivo, cookie perdido, etc.)
-    limparExpirados();
-    const code = gerarCodigo();
-    pendingCodes.set(code, { userId: usuario.id, expiresAt: Date.now() + 5 * 60 * 1000 });
-
-    axios.post(`${env.BOT_INTERNAL_URL}/notify`, {
-      discord_id: usuario.discord_id,
-      mensagem: [
-        `Código de acesso ao **Portal de Tarefas**: **\`${code}\`**`,
-        ``,
-        `Expira em 5 minutos. Se não foi você, ignore esta mensagem.`,
-      ].join('\n'),
-    }).catch((err: unknown) => {
-      console.warn('[AuthService] Falha ao enviar código Discord:', err instanceof Error ? err.message : err);
-    });
+    // CASO 2 — Discord já vinculado → login direto com PIN (sem código do Discord)
+    const payload = { id: usuario.id, nome: usuario.nome, cargo: usuario.cargo, setor_id: usuario.setor_id };
+    const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);
 
     await LogRepository.registrar({
       usuario_id: usuario.id,
-      tipo_evento: 'LOGIN_AGUARDANDO_DISCORD',
-      descricao: `Código de acesso enviado para Discord de ${usuario.nome}`,
+      tipo_evento: 'LOGIN',
+      descricao: `Login via PIN — ${usuario.nome}`,
     });
 
-    return {
-      status: 'discord_confirmation_required' as const,
-      message: 'Digite o código enviado no seu Discord para confirmar o acesso.',
-    };
+    return { status: 'ok' as const, token, user: payload };
   },
 
   // ── Confirma o código recebido no Discord ──────────────────────────────

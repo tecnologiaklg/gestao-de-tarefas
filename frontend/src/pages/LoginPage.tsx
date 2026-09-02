@@ -86,9 +86,12 @@ export function LoginPage() {
       const res = await authService.login(pin, showToken ? adminToken : undefined);
 
       if (res.status === 'ok' && res.token && res.user) {
-        // Root entra direto sem chamada duplicada
         setSession(res.token, res.user as AuthUser);
-        navigate('/root/equipes', { replace: true });
+        if (res.user.role === 'ROOT') {
+          navigate('/root/equipes', { replace: true });
+        } else {
+          navigate('/tarefas', { replace: true });
+        }
         return;
       }
 
