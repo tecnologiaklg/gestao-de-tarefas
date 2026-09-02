@@ -10,7 +10,7 @@ export function PriorityHelpModal({ onClose }: Props) {
       bg: 'var(--color-success-bg)',
       border: 'var(--color-success-border)',
       quando: 'Pode aguardar sem gerar atrasos ou prejuízos na operação.',
-      exemplos: 'Organização interna, ajustes estéticos, tarefas sem data crítica.',
+      exemplos: 'Organizar arquivos e cadastros, pequenos ajustes visuais, tarefas de melhoria sem prazo definido.',
     },
     {
       prio: 'Normal',
@@ -18,7 +18,7 @@ export function PriorityHelpModal({ onClose }: Props) {
       bg: 'var(--color-info-bg)',
       border: 'var(--color-info-border)',
       quando: 'Atividades rotineiras com prazos regulares do fluxo de trabalho.',
-      exemplos: 'Relatórios periódicos, cotações com fornecedores, conferências.',
+      exemplos: 'Relatórios periódicos, cotações e follow-up com fornecedores, conferência de documentos, agendamentos de rotina.',
     },
     {
       prio: 'Urgente',
@@ -26,7 +26,7 @@ export function PriorityHelpModal({ onClose }: Props) {
       bg: 'var(--color-danger-bg)',
       border: 'var(--color-danger-border)',
       quando: 'Bloqueios que travam outros colaboradores ou prazo para o mesmo dia.',
-      exemplos: 'Sistema indisponível, risco operacional/fiscal, demandas de emergência.',
+      exemplos: 'Sistema fora do ar, cliente ou entrega parada aguardando resposta, pendência que trava o time no mesmo dia.',
     },
   ];
 
