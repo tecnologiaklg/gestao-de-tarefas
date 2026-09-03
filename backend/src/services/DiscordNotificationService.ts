@@ -85,16 +85,16 @@ export const DiscordNotificationService = {
     await enviarDM(tarefa.responsavel_id, msg);
   },
 
-  notificarReclamacao: async (tarefa: Tarefa, reclamante: { nome: string }): Promise<void> => {
-    // Avisa o CRIADOR da tarefa que o responsável reclamou do atraso
+  notificarReclamacao: async (tarefa: Tarefa, reclamante: { nome: string }, destinatarioId?: number): Promise<void> => {
     const atrasoMs = Date.now() - new Date(tarefa.prazo).getTime();
     const atrasoMin = Math.floor(atrasoMs / 60000);
+    const targetId = destinatarioId ?? tarefa.criador_id;
     const msg =
       `🚨 **Reclamação de atraso registrada!**\n` +
       `📋 **${tarefa.titulo}**\n` +
-      `👤 **${reclamante.nome}** (responsável) registrou que esta tarefa está atrasada há ${atrasoMin} minutos.\n` +
+      `👤 **${reclamante.nome}** registrou cobrança de atraso (${atrasoMin} minutos).\n` +
       `⏰ Prazo era: **${formatDate(tarefa.prazo)}**\n` +
       `📝 O comentário foi registrado na tarefa.`;
-    await enviarDM(tarefa.criador_id, msg);
+    await enviarDM(targetId, msg);
   },
 };

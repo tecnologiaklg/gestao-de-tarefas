@@ -4,6 +4,7 @@ import { ComentarioController } from '../controllers/ComentarioController';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { checkNotRoot, checkCoordenador } from '../middleware/role.middleware';
 import { HistoricoRepository } from '../repositories/HistoricoRepository';
+import { LogRepository } from '../repositories/LogRepository';
 import { TarefaRepository } from '../repositories/TarefaRepository';
 import { DiscordNotificationService } from '../services/DiscordNotificationService';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';

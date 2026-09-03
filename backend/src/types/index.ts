@@ -39,6 +39,8 @@ export interface Tarefa {
   criado_em: string;
   concluido_em: string | null;
   atrasada: boolean;
+  aviso_10m_enviado?: boolean;
+  reclamacao_enviada?: boolean;
 }
 
 export interface HistoricoEntry {
