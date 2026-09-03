@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { useComentarios, useHistorico } from '../../hooks/useData';
 import { useAuth } from '../../contexts/AuthContext';
 import { comentarioService } from '../../services/comentarioService';
+import { tarefaService } from '../../services/tarefaService';
 
 interface Props { tarefa: Tarefa; onClose: () => void; }
 
@@ -21,13 +22,28 @@ const tipoLabel: Record<string, string> = {
   EDICAO_PRAZO: 'Prazo alterado', EDICAO_SETOR_ID: 'Setor alterado',
 };
 
+function isAtrasadaMais15min(prazo: string, atrasada: boolean): boolean {
+  if (!atrasada) return false;
+  return Date.now() - new Date(prazo).getTime() >= 15 * 60 * 1000;
+}
+
 export function TaskSidebar({ tarefa, onClose }: Props) {
   const { user } = useAuth();
-  const [tab, setTab]       = useState<Tab>('principal');
-  const [coment, setComent] = useState('');
-  const [sending, setSending] = useState(false);
+  const [tab, setTab]           = useState<Tab>('principal');
+  const [coment, setComent]     = useState('');
+  const [sending, setSending]   = useState(false);
+  const [reclamando, setReclamando] = useState(false);
   const { comentarios, refetch } = useComentarios(tarefa.id);
   const { historico } = useHistorico(tarefa.id);
+
+  const reclamacaoKey = `reclamacao_enviada_${tarefa.id}`;
+  const jaReclamou = typeof window !== 'undefined' && !!localStorage.getItem(reclamacaoKey);
+
+  const uid = user?.id != null ? Number(user.id) : null;
+  const [reclamadoLocal, setReclamadoLocal] = useState(false);
+  const jaReclamou = Boolean(tarefa.reclamacao_enviada) || reclamadoLocal || (typeof window !== 'undefined' && !!localStorage.getItem(reclamacaoKey));
+  const temPermissao = uid !== null && (Number(tarefa.responsavel_id) === uid || Number(tarefa.criador_id) === uid);
+  const podeReclamar = temPermissao && isAtrasadaMais15min(tarefa.prazo, tarefa.atrasada) && !jaReclamou && tarefa.status !== 'CONCLUIDA';
 
   const handleEnviarComentario = async () => {
     if (!coment.trim()) return;
@@ -40,6 +56,20 @@ export function TaskSidebar({ tarefa, onClose }: Props) {
       const msg = (e as { response?: { data?: { error?: string } } }).response?.data?.error;
       alert(msg ?? 'Erro ao enviar comentário.');
     } finally { setSending(false); }
+  };
+
+  const handleReclamar = async () => {
+    setReclamando(true);
+    try {
+      await tarefaService.reclamar(tarefa.id);
+      localStorage.setItem(reclamacaoKey, '1');
+      setReclamadoLocal(true);
+      refetch();
+      alert('✅ Lembrete de atraso registrado e enviado com sucesso via Discord!');
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { error?: string } } }).response?.data?.error;
+      alert(msg ?? 'Não foi possível registrar a reclamação.');
+    } finally { setReclamando(false); }
   };
 
   return (
@@ -79,6 +109,27 @@ export function TaskSidebar({ tarefa, onClose }: Props) {
           {/* ── Aba Principal: Detalhes + Comentários ── */}
           {tab === 'principal' && (
             <>
+              {/* Botão de reclamação — aparece somente se elegível */}
+              {podeReclamar && (
+                <div className="reclamacao-banner">
+                  <div className="reclamacao-text">
+                    <span className="reclamacao-icon">🚨</span>
+                    <div>
+                      <div className="reclamacao-titulo">Tarefa atrasada há mais de 15 minutos</div>
+                      <div className="reclamacao-desc">Você pode notificar o criador desta tarefa uma única vez sobre o atraso.</div>
+                    </div>
+                  </div>
+                  <button
+                    id={`btn-reclamar-${tarefa.id}`}
+                    className="btn-reclamar"
+                    onClick={handleReclamar}
+                    disabled={reclamando}
+                  >
+                    {reclamando ? 'Enviando…' : '📣 Notificar criador'}
+                  </button>
+                </div>
+              )}
+
               {/* Descrição */}
               <div className="detail-field">
                 <div className="detail-label">Descrição</div>

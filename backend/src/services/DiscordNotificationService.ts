@@ -74,14 +74,27 @@ export const DiscordNotificationService = {
     }
   },
 
-  notificarAtraso: async (tarefa: Tarefa): Promise<void> => {
+  notificarPrazo10Min: async (tarefa: Tarefa): Promise<void> => {
     const msg =
-      `⚠️ **Atenção: Tarefa Atrasada!**\n` +
+      `⏰ **Atenção: Tarefa próxima do horário de entrega (10 minutos restantes)!**\n` +
       `📋 **${tarefa.titulo}**\n` +
       `👤 Enviada por: ${tarefa.criador_nome}\n` +
-      `⏰ Horário de entrega: **${formatDate(tarefa.prazo)}** (vencida)\n` +
+      `⏰ Horário de entrega: **${formatDate(tarefa.prazo)}** \n` +
       `🔴 Prioridade: ${tarefa.prioridade}\n` +
-      `👉 A tarefa ultrapassou o horário limite de entrega. Acesse o portal para atualizar.`;
+      `👉 Acesse o portal para atualizar o andamento ou concluir a tarefa.`;
     await enviarDM(tarefa.responsavel_id, msg);
+  },
+
+  notificarReclamacao: async (tarefa: Tarefa, reclamante: { nome: string }): Promise<void> => {
+    // Avisa o CRIADOR da tarefa que o responsável reclamou do atraso
+    const atrasoMs = Date.now() - new Date(tarefa.prazo).getTime();
+    const atrasoMin = Math.floor(atrasoMs / 60000);
+    const msg =
+      `🚨 **Reclamação de atraso registrada!**\n` +
+      `📋 **${tarefa.titulo}**\n` +
+      `👤 **${reclamante.nome}** (responsável) registrou que esta tarefa está atrasada há ${atrasoMin} minutos.\n` +
+      `⏰ Prazo era: **${formatDate(tarefa.prazo)}**\n` +
+      `📝 O comentário foi registrado na tarefa.`;
+    await enviarDM(tarefa.criador_id, msg);
   },
 };

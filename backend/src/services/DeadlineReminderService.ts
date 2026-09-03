@@ -10,10 +10,10 @@ class DeadlineReminderServiceManager {
 
   public start(): void {
     if (this.timer) return;
-    console.log('[DeadlineReminderService] Monitoramento de tarefas atrasadas ativo (ciclos de 30s)...');
-    this.verificarAtrasos().catch(e => console.error('[DeadlineReminderService] Erro inicial:', e));
+    console.log('[DeadlineReminderService] Monitoramento de prazos ativo (ciclos de 30s)...');
+    this.verificarPrazos().catch(e => console.error('[DeadlineReminderService] Erro inicial:', e));
     this.timer = setInterval(() => {
-      this.verificarAtrasos().catch(e => console.error('[DeadlineReminderService] Erro no ciclo:', e));
+      this.verificarPrazos().catch(e => console.error('[DeadlineReminderService] Erro no ciclo:', e));
     }, 30_000);
   }
 
@@ -24,35 +24,35 @@ class DeadlineReminderServiceManager {
     }
   }
 
-  public async verificarAtrasos(): Promise<void> {
+  public async verificarPrazos(): Promise<void> {
     if (this.running) return;
     this.running = true;
     try {
-      const tarefas = await TarefaRepository.findAtrasadasSemAviso();
+      const tarefas = await TarefaRepository.findPrestesAVencer10m();
       for (const tarefa of tarefas) {
         try {
-          console.log(`[DeadlineReminderService] Disparando aviso de tarefa atrasada #${tarefa.id}: "${tarefa.titulo}" (Resp ID: ${tarefa.responsavel_id})`);
-          
-          // 1. Marca no banco para evitar disparos duplicados
-          await TarefaRepository.marcarAvisoAtrasoEnviado(tarefa.id);
+          console.log(`[DeadlineReminderService] Aviso de 10 min para tarefa #${tarefa.id}: "${tarefa.titulo}" (Resp ID: ${tarefa.responsavel_id})`);
 
-          // 2. Dispara no Discord na hora que atrasou
-          await DiscordNotificationService.notificarAtraso(tarefa);
+          // 1. Marca no banco para não repetir
+          await TarefaRepository.marcarAviso10mEnviado(tarefa.id);
 
-          // 3. Dispara na tela do usuário via SSE na hora que atrasou
-          SseService.emitToUser(tarefa.responsavel_id, 'TAREFA_ATRASADA', {
+          // 2. Discord DM
+          await DiscordNotificationService.notificarPrazo10Min(tarefa);
+
+          // 3. SSE para tela aberta
+          SseService.emitToUser(tarefa.responsavel_id, 'AVISO_PRAZO_10MIN', {
             tarefa,
-            mensagem: `A tarefa "${tarefa.titulo}" acaba de ultrapassar o horário limite de entrega!`,
+            mensagem: `A tarefa "${tarefa.titulo}" vence em aproximadamente 10 minutos!`,
           });
 
-          // 4. Registra no log
+          // 4. Log
           await LogRepository.registrar({
             usuario_id: tarefa.responsavel_id,
-            tipo_evento: 'AVISO_TAREFA_ATRASADA',
-            descricao: `Alerta de atraso enviado para tarefa #${tarefa.id}: ${tarefa.titulo}`,
+            tipo_evento: 'AVISO_PRAZO_10MIN',
+            descricao: `Alerta de 10 min enviado para tarefa #${tarefa.id}: ${tarefa.titulo}`,
           });
         } catch (itemErr) {
-          console.error(`[DeadlineReminderService] Erro ao processar tarefa atrasada #${tarefa.id}:`, itemErr);
+          console.error(`[DeadlineReminderService] Erro ao processar tarefa #${tarefa.id}:`, itemErr);
         }
       }
     } finally {

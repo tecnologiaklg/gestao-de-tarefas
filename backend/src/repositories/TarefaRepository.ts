@@ -27,7 +27,8 @@ const BASE_SELECT = `
     t.responsavel_id, u_res.nome AS responsavel_nome, u_res.cargo AS responsavel_cargo,
     t.setor_id, s.nome AS setor_nome,
     (t.prazo < NOW() AND t.status != 'CONCLUIDA') AS atrasada,
-    COALESCE(t.aviso_atraso_enviado, FALSE) AS aviso_atraso_enviado
+    COALESCE(t.aviso_10m_enviado, FALSE) AS aviso_10m_enviado,
+    COALESCE(t.reclamacao_enviada, FALSE) AS reclamacao_enviada
   FROM tarefas t
   JOIN usuarios u_cri ON u_cri.id = t.criador_id
   JOIN usuarios u_res ON u_res.id = t.responsavel_id
@@ -156,29 +157,35 @@ export const TarefaRepository = {
 
   ensureColumns: async (): Promise<void> => {
     try {
-      await query('ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS aviso_atraso_enviado BOOLEAN DEFAULT FALSE;');
+      await query('ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS aviso_10m_enviado BOOLEAN DEFAULT FALSE;');
+      await query('ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS reclamacao_enviada BOOLEAN DEFAULT FALSE;');
     } catch (e) {
-      console.warn('[TarefaRepository] Erro ao garantir coluna aviso_atraso_enviado:', e);
+      console.warn('[TarefaRepository] Erro ao garantir coluna aviso_10m_enviado:', e);
     }
   },
 
-  findAtrasadasSemAviso: async (): Promise<Tarefa[]> => {
+  findPrestesAVencer10m: async (): Promise<Tarefa[]> => {
     const sql = `
       ${BASE_SELECT}
       WHERE t.status != 'CONCLUIDA'
-        AND (t.aviso_atraso_enviado IS NULL OR t.aviso_atraso_enviado = FALSE)
-        AND t.prazo <= NOW()
+        AND (t.aviso_10m_enviado IS NULL OR t.aviso_10m_enviado = FALSE)
+        AND t.prazo > NOW()
+        AND t.prazo <= (NOW() + INTERVAL '10 minutes')
       ORDER BY t.prazo ASC
     `;
     const { rows } = await query<Tarefa>(sql);
     return rows;
   },
 
-  marcarAvisoAtrasoEnviado: async (id: number): Promise<void> => {
-    await query('UPDATE tarefas SET aviso_atraso_enviado = TRUE WHERE id = $1', [id]);
+  marcarReclamacaoEnviada: async (id: number): Promise<void> => {
+    await query('UPDATE tarefas SET reclamacao_enviada = TRUE WHERE id = $1', [id]);
   },
 
-  resetarAvisoAtraso: async (id: number): Promise<void> => {
-    await query('UPDATE tarefas SET aviso_atraso_enviado = FALSE WHERE id = $1', [id]);
+  marcarAviso10mEnviado: async (id: number): Promise<void> => {
+    await query('UPDATE tarefas SET aviso_10m_enviado = TRUE WHERE id = $1', [id]);
+  },
+
+  resetarAviso10m: async (id: number): Promise<void> => {
+    await query('UPDATE tarefas SET aviso_10m_enviado = FALSE WHERE id = $1', [id]);
   },
 };

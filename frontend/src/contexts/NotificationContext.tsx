@@ -5,7 +5,7 @@ import { Tarefa } from '../types';
 
 export interface ToastNotification {
   id: string;
-  type: 'tarefa_criada' | 'aviso_atraso' | 'info';
+  type: 'tarefa_criada' | 'aviso_prazo_10m' | 'info';
   title: string;
   message: string;
   tarefa?: Tarefa;
@@ -29,17 +29,15 @@ function playAudioAlert(type: 'chime' | 'warning') {
     const now = ctx.currentTime;
 
     if (type === 'chime') {
-      // Duas notas suaves D5 -> A5 (som amigável de nova tarefa)
+      // D5 -> A5 — som suave de nova tarefa
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
       osc1.type = 'sine';
       osc1.frequency.setValueAtTime(587.33, now);
       gain1.gain.setValueAtTime(0.12, now);
       gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(now);
-      osc1.stop(now + 0.35);
+      osc1.connect(gain1); gain1.connect(ctx.destination);
+      osc1.start(now); osc1.stop(now + 0.35);
 
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
@@ -47,14 +45,11 @@ function playAudioAlert(type: 'chime' | 'warning') {
       osc2.frequency.setValueAtTime(880.00, now + 0.12);
       gain2.gain.setValueAtTime(0.15, now + 0.12);
       gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.start(now + 0.12);
-      osc2.stop(now + 0.55);
+      osc2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.start(now + 0.12); osc2.stop(now + 0.55);
     } else {
-      // Alerta de 5 minutos: sequência de atenção E5 -> G5
-      const freqs = [659.25, 783.99];
-      freqs.forEach((freq, idx) => {
+      // E5 -> G5 — alerta de prazo urgente
+      [659.25, 783.99].forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
@@ -62,10 +57,8 @@ function playAudioAlert(type: 'chime' | 'warning') {
         osc.frequency.setValueAtTime(freq, start);
         gain.gain.setValueAtTime(0.18, start);
         gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(start);
-        osc.stop(start + 0.4);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(start); osc.stop(start + 0.4);
       });
     }
   } catch (e) {
@@ -87,13 +80,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const addToast = useCallback((toast: Omit<ToastNotification, 'id' | 'createdAt'>) => {
     const id = 'toast_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
     const newToast: ToastNotification = { ...toast, id, createdAt: Date.now() };
-
-    setToasts(prev => [newToast, ...prev.slice(0, 4)]); // Mantém no máximo 5 simultâneos
-
-    // Auto dismiss em 8 segundos
-    setTimeout(() => {
-      removeToast(id);
-    }, 8000);
+    setToasts(prev => [newToast, ...prev.slice(0, 4)]);
+    setTimeout(() => removeToast(id), 8000);
   }, [removeToast]);
 
   const requestPermission = useCallback(async () => {
@@ -113,7 +101,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const connect = () => {
-      // Conecta ao endpoint SSE passando o token
       const url = `/api/events?token=${encodeURIComponent(token)}`;
       eventSource = new EventSource(url);
 
@@ -124,11 +111,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       // 1. Nova Tarefa Atribuída
       eventSource.addEventListener('TAREFA_CRIADA', (e: MessageEvent) => {
         try {
-          const data = JSON.parse(e.data) as { tarefa: Tarefa; mensagem?: string };
+          const data = JSON.parse(e.data) as { tarefa: Tarefa };
           const tarefa = data.tarefa;
           const uid = user.id != null ? Number(user.id) : null;
 
-          // Se a tarefa foi criada para o usuário logado
           if (uid !== null && Number(tarefa.responsavel_id) === uid) {
             playAudioAlert('chime');
             addToast({
@@ -137,52 +123,46 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
               message: `"${tarefa.titulo}" de ${tarefa.criador_nome}`,
               tarefa,
             });
-
-            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-              new Notification('📋 Nova Tarefa Atribuída!', {
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('📋 Nova Tarefa!', {
                 body: `"${tarefa.titulo}" enviada por ${tarefa.criador_nome}`,
                 icon: '/logoklg.png',
               });
             }
           }
-
-          // Dispara evento global para o TarefasPage atualizar o Kanban na hora
           window.dispatchEvent(new CustomEvent('tarefa_alterada', { detail: { type: 'CRIADA', tarefa } }));
         } catch (err) {
           console.error('[SSE] Erro ao processar TAREFA_CRIADA:', err);
         }
       });
 
-      // 2. Alerta de 5 minutos do prazo
-      eventSource.addEventListener('TAREFA_ATRASADA', (e: MessageEvent) => {
+      // 2. Alerta 10 minutos antes do prazo
+      eventSource.addEventListener('AVISO_PRAZO_10MIN', (e: MessageEvent) => {
         try {
-          const data = JSON.parse(e.data) as { tarefa: Tarefa; mensagem?: string };
+          const data = JSON.parse(e.data) as { tarefa: Tarefa };
           const tarefa = data.tarefa;
           const uid = user.id != null ? Number(user.id) : null;
 
           if (uid !== null && Number(tarefa.responsavel_id) === uid) {
             playAudioAlert('warning');
             addToast({
-              type: 'aviso_atraso',
-              title: '⚠️ Atenção: Tarefa Atrasada!',
-              message: `A tarefa "${tarefa.titulo}" acabou de ultrapassar o horário limite!`,
+              type: 'aviso_prazo_10m',
+              title: '⏰ Atenção: 10 minutos para o prazo!',
+              message: `A tarefa "${tarefa.titulo}" vence em 10 minutos!`,
               tarefa,
             });
-
-            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-              new Notification('⚠️ Tarefa Atrasada!', {
-                body: `A tarefa "${tarefa.titulo}" ultrapassou o horário de entrega!`,
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('⏰ 10 min para o prazo!', {
+                body: `"${tarefa.titulo}" vence em breve!`,
                 icon: '/logoklg.png',
               });
             }
           }
-
-          window.dispatchEvent(new CustomEvent('tarefa_alterada', { detail: { type: 'ATRASADA', tarefa } }));
+          window.dispatchEvent(new CustomEvent('tarefa_alterada', { detail: { type: 'AVISO_PRAZO', tarefa } }));
         } catch (err) {
-          console.error('[SSE] Erro ao processar TAREFA_ATRASADA:', err);
+          console.error('[SSE] Erro ao processar AVISO_PRAZO_10MIN:', err);
         }
       });
-
 
       // 3. Atualizações e mudanças de status
       eventSource.addEventListener('TAREFA_ATUALIZADA', (e: MessageEvent) => {
@@ -204,13 +184,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       });
 
       eventSource.onerror = () => {
-        console.warn('[SSE] Conexão encerrada ou erro de rede. Reconectando em 5s...');
-        if (eventSource) {
-          eventSource.close();
-          eventSource = null;
-        }
+        console.warn('[SSE] Conexão encerrada. Reconectando em 5s...');
+        if (eventSource) { eventSource.close(); eventSource = null; }
         if (!reconnectTimeout) {
-          reconnectTimeout = setTimeout(connect, 5000);
+          reconnectTimeout = setTimeout(() => { reconnectTimeout = null; connect(); }, 5000);
         }
       };
     };

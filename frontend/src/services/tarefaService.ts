@@ -43,4 +43,8 @@ export const tarefaService = {
     const { data } = await api.patch<Tarefa>(`/tarefas/${id}/status`, { status, motivo });
     return data;
   },
+  reclamar: async (tarefaId: number) => {
+    const { data } = await api.post(`/tarefas/${tarefaId}/reclamar`);
+    return data;
+  },
 };

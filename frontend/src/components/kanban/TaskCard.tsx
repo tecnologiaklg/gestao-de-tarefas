@@ -16,8 +16,6 @@ const prioColor: Record<string, string> = {
   URGENTE: 'var(--color-urgente)',
 };
 
-
-
 function formatDate(d: string) {
   const date = new Date(d);
   const now   = new Date();
@@ -25,6 +23,12 @@ function formatDate(d: string) {
   if (isToday) return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ' (hoje)';
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' · ' +
          date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function isProximoDoPrazo(prazoStr: string, status: string): boolean {
+  if (status === 'CONCLUIDA') return false;
+  const diff = new Date(prazoStr).getTime() - Date.now();
+  return diff > 0 && diff <= 10 * 60 * 1000; // dentro dos próximos 10 minutos
 }
 
 function IconBuilding() {
@@ -68,7 +72,8 @@ function IconOutgoing() {
 }
 
 export function TaskCard({ tarefa, perspectiva = 'para_mim', onClick, isDragging }: Props) {
-  const prestesAVencer = checkPrestesAVencer(tarefa.prazo, tarefa.status);
+  const proximoDoPrazo = isProximoDoPrazo(tarefa.prazo, tarefa.status);
+
   return (
     <div
       className={`task-card task-card-${perspectiva}${isDragging ? ' dragging' : ''}`}
@@ -127,7 +132,11 @@ export function TaskCard({ tarefa, perspectiva = 'para_mim', onClick, isDragging
 
       {/* Rodapé com badges */}
       <div className="task-card-badges">
-        
+        {proximoDoPrazo && (
+          <span className="badge-prazo-urgente" title="Vence em menos de 10 minutos!">
+            ⏰ 10 min
+          </span>
+        )}
         <Badge type="prioridade" value={tarefa.prioridade} />
         {tarefa.atrasada && <Badge type="atrasada" value={true} />}
       </div>
