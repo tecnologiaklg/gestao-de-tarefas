@@ -183,19 +183,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         }
       });
 
-            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-              new Notification('⏰ Prazo em 5 minutos!', {
-                body: `A tarefa "${tarefa.titulo}" vence em breve!`,
-                icon: '/logoklg.png',
-              });
-            }
-          }
-
-          window.dispatchEvent(new CustomEvent('tarefa_alterada', { detail: { type: 'AVISO_PRAZO', tarefa } }));
-        } catch (err) {
-          console.error('[SSE] Erro ao processar AVISO_PRAZO_5MIN:', err);
-        }
-      });
 
       // 3. Atualizações e mudanças de status
       eventSource.addEventListener('TAREFA_ATUALIZADA', (e: MessageEvent) => {
