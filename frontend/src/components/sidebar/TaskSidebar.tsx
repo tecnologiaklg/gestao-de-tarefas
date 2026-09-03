@@ -37,8 +37,6 @@ export function TaskSidebar({ tarefa, onClose }: Props) {
   const { historico } = useHistorico(tarefa.id);
 
   const reclamacaoKey = `reclamacao_enviada_${tarefa.id}`;
-  const jaReclamou = typeof window !== 'undefined' && !!localStorage.getItem(reclamacaoKey);
-
   const uid = user?.id != null ? Number(user.id) : null;
   const [reclamadoLocal, setReclamadoLocal] = useState(false);
   const jaReclamou = Boolean(tarefa.reclamacao_enviada) || reclamadoLocal || (typeof window !== 'undefined' && !!localStorage.getItem(reclamacaoKey));

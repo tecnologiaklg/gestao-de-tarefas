@@ -26,7 +26,7 @@ function IconClock() {
 }
 
 function ToastItem({ toast, onRemove }: { toast: ToastNotification; onRemove: () => void }) {
-  const isAvisoPrazo = toast.type === 'aviso_prazo_10m' || toast.type === 'aviso_atraso';
+  const isAvisoPrazo = toast.type === 'aviso_prazo_10m';
 
   return (
     <div className={`toast-card ${isAvisoPrazo ? 'toast-aviso-prazo' : 'toast-nova-tarefa'}`}>
