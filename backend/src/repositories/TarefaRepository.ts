@@ -26,7 +26,8 @@ const BASE_SELECT = `
     t.criador_id, u_cri.nome AS criador_nome,
     t.responsavel_id, u_res.nome AS responsavel_nome, u_res.cargo AS responsavel_cargo,
     t.setor_id, s.nome AS setor_nome,
-    (t.prazo < NOW() AND t.status != 'CONCLUIDA') AS atrasada
+    (t.prazo < NOW() AND t.status != 'CONCLUIDA') AS atrasada,
+    COALESCE(t.aviso_5m_enviado, FALSE) AS aviso_5m_enviado
   FROM tarefas t
   JOIN usuarios u_cri ON u_cri.id = t.criador_id
   JOIN usuarios u_res ON u_res.id = t.responsavel_id
@@ -151,5 +152,34 @@ export const TarefaRepository = {
        WHERE t.setor_id = $1 AND u.cargo = 'FUNCIONARIO'`, [setorId]
     );
     return rows[0];
+  },
+
+  ensureColumns: async (): Promise<void> => {
+    try {
+      await query('ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS aviso_5m_enviado BOOLEAN DEFAULT FALSE;');
+    } catch (e) {
+      console.warn('[TarefaRepository] Erro ao garantir coluna aviso_5m_enviado:', e);
+    }
+  },
+
+  findPrestesAVencer: async (): Promise<Tarefa[]> => {
+    const sql = `
+      ${BASE_SELECT}
+      WHERE t.status != 'CONCLUIDA'
+        AND (t.aviso_5m_enviado IS NULL OR t.aviso_5m_enviado = FALSE)
+        AND t.prazo > NOW()
+        AND t.prazo <= (NOW() + INTERVAL '5 minutes')
+      ORDER BY t.prazo ASC
+    `;
+    const { rows } = await query<Tarefa>(sql);
+    return rows;
+  },
+
+  marcarAviso5mEnviado: async (id: number): Promise<void> => {
+    await query('UPDATE tarefas SET aviso_5m_enviado = TRUE WHERE id = $1', [id]);
+  },
+
+  resetarAviso5m: async (id: number): Promise<void> => {
+    await query('UPDATE tarefas SET aviso_5m_enviado = FALSE WHERE id = $1', [id]);
   },
 };

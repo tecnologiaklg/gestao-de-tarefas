@@ -69,7 +69,18 @@ export function TarefasPage() {
   if (prazo)      params.prazo      = prazo;
 
   const { tarefas, setTarefas, loading, refetch } = useTarefas('todas', params);
-  const { kpis, loading: kpiLoading }             = useKpis('usuario');
+  const { kpis, loading: kpiLoading, refetch: refetchKpis } = useKpis('usuario');
+
+  // Atualização em tempo real na tela aberta sem necessidade de F5
+  useEffect(() => {
+    const handleTarefaAlterada = () => {
+      refetch();
+      refetchKpis();
+    };
+
+    window.addEventListener('tarefa_alterada', handleTarefaAlterada);
+    return () => window.removeEventListener('tarefa_alterada', handleTarefaAlterada);
+  }, [refetch, refetchKpis]);
 
   const uid = user?.id != null ? Number(user.id) : null;
 

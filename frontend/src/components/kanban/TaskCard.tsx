@@ -16,6 +16,15 @@ const prioColor: Record<string, string> = {
   URGENTE: 'var(--color-urgente)',
 };
 
+function checkPrestesAVencer(prazoStr: string, status: string): boolean {
+  if (status === 'CONCLUIDA') return false;
+  const prazo = new Date(prazoStr).getTime();
+  const now = Date.now();
+  const diffMs = prazo - now;
+  // Entre 0 e 5 minutos restantes
+  return diffMs > 0 && diffMs <= 5 * 60 * 1000;
+}
+
 function formatDate(d: string) {
   const date = new Date(d);
   const now   = new Date();
@@ -66,6 +75,7 @@ function IconOutgoing() {
 }
 
 export function TaskCard({ tarefa, perspectiva = 'para_mim', onClick, isDragging }: Props) {
+  const prestesAVencer = checkPrestesAVencer(tarefa.prazo, tarefa.status);
   return (
     <div
       className={`task-card task-card-${perspectiva}${isDragging ? ' dragging' : ''}`}
@@ -124,6 +134,11 @@ export function TaskCard({ tarefa, perspectiva = 'para_mim', onClick, isDragging
 
       {/* Rodapé com badges */}
       <div className="task-card-badges">
+        {prestesAVencer && (
+          <span className="badge-prazo-urgente" title="Vence em menos de 5 minutos!">
+            ⏰ 5 min restantes
+          </span>
+        )}
         <Badge type="prioridade" value={tarefa.prioridade} />
         {tarefa.atrasada && <Badge type="atrasada" value={true} />}
       </div>

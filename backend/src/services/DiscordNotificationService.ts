@@ -73,4 +73,15 @@ export const DiscordNotificationService = {
       }
     }
   },
+
+  notificarPrazo5Min: async (tarefa: Tarefa): Promise<void> => {
+    const msg =
+      `⏰ **Atenção: Tarefa próxima do horário de entrega (5 minutos restantes)!**\n` +
+      `📋 **${tarefa.titulo}**\n` +
+      `👤 Enviada por: ${tarefa.criador_nome}\n` +
+      `⏰ Horário limite: **${formatDate(tarefa.prazo)}**\n` +
+      `🔴 Prioridade: ${tarefa.prioridade}\n` +
+      `👉 Acesse o portal para atualizar o andamento ou concluir a tarefa.`;
+    await enviarDM(tarefa.responsavel_id, msg);
+  },
 };

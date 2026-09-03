@@ -5,8 +5,16 @@ import { UnauthorizedError } from '../errors/AppError';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) return next(new UnauthorizedError('Token não fornecido'));
-  const token = authHeader.split(' ')[1];
+  let token = '';
+
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else if (typeof req.query.token === 'string') {
+    token = req.query.token;
+  }
+
+  if (!token) return next(new UnauthorizedError('Token não fornecido'));
+
   try {
     req.user = AuthService.verifyToken(token);
     next();

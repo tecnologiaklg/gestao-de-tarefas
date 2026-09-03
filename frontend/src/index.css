@@ -3919,3 +3919,194 @@ span.flatpickr-weekday {
 
 
 
+
+
+/* ── Realtime Toast Notifications ────────────────────────────── */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 420px;
+  width: calc(100vw - 48px);
+}
+
+.toast-card {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #1e293b);
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  overflow: hidden;
+  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+[data-theme="dark"] .toast-card {
+  background: #1e2538;
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.toast-nova-tarefa {
+  border-left: 5px solid #3b82f6;
+}
+
+.toast-aviso-prazo {
+  border-left: 5px solid #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-surface, #ffffff) 100%);
+  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1), toastPulseBorder 2s infinite alternate;
+}
+
+[data-theme="dark"] .toast-aviso-prazo {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, #1e2538 100%);
+}
+
+@keyframes toastPulseBorder {
+  0% { box-shadow: 0 12px 32px -4px rgba(239, 68, 68, 0.3); }
+  100% { box-shadow: 0 12px 36px 0px rgba(239, 68, 68, 0.6); }
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.toast-nova-tarefa .toast-icon {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
+.toast-aviso-prazo .toast-icon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: var(--text-primary, #0f172a);
+}
+
+[data-theme="dark"] .toast-title {
+  color: #ffffff;
+}
+
+.toast-message {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+[data-theme="dark"] .toast-message {
+  color: #cbd5e1;
+}
+
+.toast-sub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ef4444;
+  margin-top: 4px;
+}
+
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.toast-close-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary, #0f172a);
+}
+
+[data-theme="dark"] .toast-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(59, 130, 246, 0.6);
+  animation: toastProgress 8s linear forwards;
+}
+
+.toast-aviso-prazo .toast-progress-bar {
+  background: #ef4444;
+}
+
+@keyframes toastProgress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* Badge de 5 min restantes no TaskCard */
+.badge-prazo-urgente {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  animation: badgePulse 1.5s infinite alternate;
+}
+
+[data-theme="dark"] .badge-prazo-urgente {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.05); opacity: 1; }
+}

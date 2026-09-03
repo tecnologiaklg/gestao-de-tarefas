@@ -1,3 +1,4 @@
+import { SseService } from './SseService';
 // services/TarefaService.ts
 import { TarefaRepository, TarefaFilters } from '../repositories/TarefaRepository';
 import { HistoricoRepository } from '../repositories/HistoricoRepository';
