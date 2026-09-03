@@ -5,7 +5,7 @@ import { Tarefa } from '../types';
 
 export interface ToastNotification {
   id: string;
-  type: 'tarefa_criada' | 'aviso_prazo' | 'info';
+  type: 'tarefa_criada' | 'aviso_atraso' | 'info';
   title: string;
   message: string;
   tarefa?: Tarefa;
@@ -110,7 +110,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     if (!token || !user) return;
 
     let eventSource: EventSource | null = null;
-    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const connect = () => {
       // Conecta ao endpoint SSE passando o token
@@ -154,7 +154,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       });
 
       // 2. Alerta de 5 minutos do prazo
-      eventSource.addEventListener('AVISO_PRAZO_5MIN', (e: MessageEvent) => {
+      eventSource.addEventListener('TAREFA_ATRASADA', (e: MessageEvent) => {
         try {
           const data = JSON.parse(e.data) as { tarefa: Tarefa; mensagem?: string };
           const tarefa = data.tarefa;
@@ -163,11 +163,25 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           if (uid !== null && Number(tarefa.responsavel_id) === uid) {
             playAudioAlert('warning');
             addToast({
-              type: 'aviso_prazo',
-              title: '⏰ Atenção: Vence em 5 minutos!',
-              message: `A tarefa "${tarefa.titulo}" tem prazo final iminente!`,
+              type: 'aviso_atraso',
+              title: '⚠️ Atenção: Tarefa Atrasada!',
+              message: `A tarefa "${tarefa.titulo}" acabou de ultrapassar o horário limite!`,
               tarefa,
             });
+
+            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification('⚠️ Tarefa Atrasada!', {
+                body: `A tarefa "${tarefa.titulo}" ultrapassou o horário de entrega!`,
+                icon: '/logoklg.png',
+              });
+            }
+          }
+
+          window.dispatchEvent(new CustomEvent('tarefa_alterada', { detail: { type: 'ATRASADA', tarefa } }));
+        } catch (err) {
+          console.error('[SSE] Erro ao processar TAREFA_ATRASADA:', err);
+        }
+      });
 
             if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
               new Notification('⏰ Prazo em 5 minutos!', {

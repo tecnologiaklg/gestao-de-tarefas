@@ -74,14 +74,14 @@ export const DiscordNotificationService = {
     }
   },
 
-  notificarPrazo5Min: async (tarefa: Tarefa): Promise<void> => {
+  notificarAtraso: async (tarefa: Tarefa): Promise<void> => {
     const msg =
-      `⏰ **Atenção: Tarefa próxima do horário de entrega (5 minutos restantes)!**\n` +
+      `⚠️ **Atenção: Tarefa Atrasada!**\n` +
       `📋 **${tarefa.titulo}**\n` +
       `👤 Enviada por: ${tarefa.criador_nome}\n` +
-      `⏰ Horário limite: **${formatDate(tarefa.prazo)}**\n` +
+      `⏰ Horário de entrega: **${formatDate(tarefa.prazo)}** (vencida)\n` +
       `🔴 Prioridade: ${tarefa.prioridade}\n` +
-      `👉 Acesse o portal para atualizar o andamento ou concluir a tarefa.`;
+      `👉 A tarefa ultrapassou o horário limite de entrega. Acesse o portal para atualizar.`;
     await enviarDM(tarefa.responsavel_id, msg);
   },
 };

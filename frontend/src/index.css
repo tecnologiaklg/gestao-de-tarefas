@@ -3974,13 +3974,13 @@ span.flatpickr-weekday {
   border-left: 5px solid #3b82f6;
 }
 
-.toast-aviso-prazo {
+.toast-aviso-atraso {
   border-left: 5px solid #ef4444;
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-surface, #ffffff) 100%);
   animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1), toastPulseBorder 2s infinite alternate;
 }
 
-[data-theme="dark"] .toast-aviso-prazo {
+[data-theme="dark"] .toast-aviso-atraso {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, #1e2538 100%);
 }
 
@@ -4004,7 +4004,7 @@ span.flatpickr-weekday {
   color: #3b82f6;
 }
 
-.toast-aviso-prazo .toast-icon {
+.toast-aviso-atraso .toast-icon {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
@@ -4076,7 +4076,7 @@ span.flatpickr-weekday {
   animation: toastProgress 8s linear forwards;
 }
 
-.toast-aviso-prazo .toast-progress-bar {
+.toast-aviso-atraso .toast-progress-bar {
   background: #ef4444;
 }
 

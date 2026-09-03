@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppLayout } from '../components/layout/AppLayout';
 import { KpiCards } from '../components/kpi/KpiCards';
 import { KanbanBoard } from '../components/kanban/KanbanBoard';
